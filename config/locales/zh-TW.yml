@@ -1,10 +1,7 @@
-# encoding: utf-8
 #
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
-# Copyright © 2013    Aecho Liu <aecho1028@gmail.com>
+# Vít Jonáš <vit.jonas@gmail.com>, Karel Pičman <karel.picman@kontron.com>, Aecho Liu <aecho1028@gmail.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,6 +19,7 @@
 
 zh-TW:
   dmsf: 文件總管  # Custom fields tab title
+  label_dmsf_file: DMS Document
   label_dmsf_file_plural: DMS 文件檔案  # Email subject & Search options
   label_dmsf_file_revision_plural: Document revisions
   label_dmsf_file_revision_access_plural: Document accesses
@@ -163,7 +161,7 @@ zh-TW:
   field_folder: 資料夾
   error_file_commit_require_uploaded_file: 檔案提交，需要上傳檔案。
 
-  warning_some_files_were_not_commited: "部份檔案因為驗証失敗無法提交: %{files}"
+  warning_some_files_were_not_committed: "部份檔案因為驗証失敗無法提交: %{files}"
 
   error_user_has_not_right_delete_folder: 使用者沒有權限，刪除資料夾。
 
@@ -266,7 +264,7 @@ zh-TW:
   dmsf_new_step: New step
   dmsf_new_step_or_approver: New step or New approver
   message_dmsf_wokflow_note: Your note...
-  info_revision: "r%{rev}"
+  info_revision: "r %{rev}"
   link_workflow: Workflow
   notice_workflow_started: Approval workflow successfully started
   text_email_subject_approved: approved
@@ -403,6 +401,7 @@ zh-TW:
   field_first_at: First
   field_last_at: Last
   field_size: 大小
+  field_locked: Locked
 
   label_add_width: Add with
 
@@ -455,14 +454,47 @@ zh-TW:
   label_column_version: 版本
   label_column_workflow: 流程
   label_column_author: 作者
+  label_column_description: 描述
+  label_column_comment: 回應
 
   label_dmsf_global_menu_disabled: Global DMS menu disabled
   note_dmsf_global_menu_disabled: If yes, DMS menu item is not present in the top menu.
+  error_dmsf_workflow_assigned: Approval workflow in use can be neither edited nor deleted.
+
+  label_empty_minor_version_by_default: Empty minor version by default
+  text_email_doc_downloaded_subject: Documents downloaded
+  text_email_doc_downloaded: has just downloaded documents of
+  field_default_dmsf_query: Default DMS query
+  field_receive_download_notification: Receive download notifications
+
+  label_remove_original_documents_module: Remove the original Documents module
+
+  text_fulltext_search: 'Full-text search in documents requires presence of %{cmd1} and %{cmd2} commands on the server.'
+
+  notice_entries_copied: Copying has succeeded
+  notice_entries_moved: Moving has succeeded
+  label_dmsf_file_revision: DMS Document rev.
+  error_not_supported_image_format: Not supported image format
+  error_not_supported_video_format: Not supported video format
+
+  label_webdav_authentication: WebDAV Authentication
+  note_webdav_authentication: Basic authentication method is considered as unsecure and therefore blocked by some
+    clients. Digest authentication is based on an auto-generated digest. Users use their login and password for
+    authentication in their WebDAV clients too.
+  label_dmsf_webdav_digest_created_on: "DMS WebDAV digest created %{value} ago"
+  label_missing_dmsf_webdav_digest: Missing a DMS WebDAV digest
+  label_dmsf_webdav_digest: DMS WebDAV digest
+  text_dmsf_webdav_digest_reset: You are supposed to enter your password to generate a new DMS WebDAV digest.
+  notice_webdav_digest_reset: Your DMS WebDAV digest was reset.
+
+  label_dmsf_commit: Commit
+  label_dmsf_upload_commit: Upload and commit
 
   easy_pages:
     modules:
       dmsf_locked_documents: My locked documents
       dmsf_open_approvals: My open approvals
+      dmsf_watched_documents: My watched documents
     module_category:
       easy_dms: Easy DMS
 

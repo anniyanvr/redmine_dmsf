@@ -1,11 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+#  Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,9 +20,9 @@
 
 module RedmineDmsf
   module Test
+    # Unit test
     class UnitTest < ActiveSupport::TestCase
-
-      self.fixtures :users, :email_addresses, :projects, :roles, :members, :member_roles
+      fixtures :users, :email_addresses, :projects, :roles, :members, :member_roles
 
       def setup
         @admin = User.find_by(login: 'admin')
@@ -53,23 +50,26 @@ module RedmineDmsf
         @file5 = DmsfFile.find 5
         @file7 = DmsfFile.find 7
         @file8 = DmsfFile.find 8
+        @file11 = DmsfFile.find 11
         @file13 = DmsfFile.find 13
+        @folder_link1 = DmsfLink.find 1
+        @file_link2 = DmsfLink.find 2
+        @file_link7 = DmsfLink.find 7
         @folder1 = DmsfFolder.find 1
         @folder2 = DmsfFolder.find 2
         @folder6 = DmsfFolder.find 6
         @folder7 = DmsfFolder.find 7
-        Setting.plugin_redmine_dmsf['dmsf_storage_directory'] = File.join(%w(files dmsf))
+        @folder8 = DmsfFolder.find 8
+        Setting.plugin_redmine_dmsf['dmsf_storage_directory'] = File.join('files', ['dmsf'])
         FileUtils.cp_r File.join(File.expand_path('../fixtures/files', __FILE__), '.'), DmsfFile.storage_path
         User.current = nil
       end
 
       def teardown
         # Delete our tmp folder
-        begin
-          FileUtils.rm_rf DmsfFile.storage_path
-        rescue => e
-          Rails.logger.error e.message
-        end
+        FileUtils.rm_rf DmsfFile.storage_path
+      rescue StandardError => e
+        Rails.logger.error e.message
       end
 
       # Allow us to override the fixtures method to implement fixtures for our plugin.
@@ -85,7 +85,7 @@ module RedmineDmsf
             redmine_table_names << x
           end
         end
-        super redmine_table_names if redmine_table_names.any?
+        super(redmine_table_names) if redmine_table_names.any?
       end
 
       protected
@@ -95,14 +95,12 @@ module RedmineDmsf
       end
 
       def text_part(email)
-        email.parts.detect {|part| part.content_type.include?('text/plain')}
+        email.parts.detect { |part| part.content_type.include?('text/plain') }
       end
 
       def html_part(email)
-        email.parts.detect {|part| part.content_type.include?('text/html')}
+        email.parts.detect { |part| part.content_type.include?('text/html') }
       end
-
     end
-
   end
 end

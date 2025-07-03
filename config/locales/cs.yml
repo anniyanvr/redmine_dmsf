@@ -1,9 +1,7 @@
-# encoding: utf-8
 #
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Vít Jonáš <vit.jonas@gmail.com>, Karel Pičman <karel.picman@kontron.com>
 #
 #
 # This program is free software; you can redistribute it and/or
@@ -22,6 +20,7 @@
 
 cs:
   dmsf: DMS  # Custom fields tab title
+  label_dmsf_file: DMS Dokument
   label_dmsf_file_plural: DMS Dokumenty  # Email subject & Search options
   label_dmsf_file_revision_plural: Revize dokumentů
   label_dmsf_file_revision_access_plural: Přístupy k dokumentům
@@ -163,7 +162,7 @@ cs:
   field_folder: Složka
   error_file_commit_require_uploaded_file: Potvrzení vyžaduje nahraný soubor
 
-  warning_some_files_were_not_commited: "Některé soubory nebyly potvrzené z důvodu chyb při validaci: %{files}"
+  warning_some_files_were_not_committed: "Některé soubory nebyly potvrzené z důvodu chyb při validaci: %{files}"
 
   error_user_has_not_right_delete_folder: Uživatel nemá právo mazat složky
 
@@ -267,7 +266,7 @@ cs:
   dmsf_new_step: Nový krok
   dmsf_new_step_or_approver: Nový krok nebo Nový schvalovatel
   message_dmsf_wokflow_note: Váš komentář...
-  info_revision: "r%{rev}"
+  info_revision: "r %{rev}"
   link_workflow: Schvalovací proces
   notice_workflow_started: Schvalovací proces byl úspěšně zahájen
   text_email_subject_approved: schválen
@@ -404,6 +403,7 @@ cs:
   field_first_at: První
   field_last_at: Poslední
   field_size: Velikost
+  field_locked: Zamčen
 
   label_add_width: Přidat s
 
@@ -456,14 +456,47 @@ cs:
   label_column_version: Verze
   label_column_workflow: Schvalování
   label_column_author: Autor
+  label_column_description: Popis
+  label_column_comment: Komentář
 
-  label_dmsf_global_menu_disabled: Global DMS menu disabled
-  note_dmsf_global_menu_disabled: If yes, DMS menu item is not present in the top menu.
+  label_dmsf_global_menu_disabled: Globální DMS menu zakázáno
+  note_dmsf_global_menu_disabled: Pokud je zašrtnuto, tak položka DMS není v hlavním menu.
+  error_dmsf_workflow_assigned: Použitý schvalovací proces nemůže být ani upraven ani smazán.
+
+  label_empty_minor_version_by_default: Prázdná vedlejší verze jako výchozí
+  text_email_doc_downloaded_subject: Stažení dokumentů
+  text_email_doc_downloaded: právě stáhl dokumety projektu
+  field_default_dmsf_query: Výchozí dotaz DMS
+  field_receive_download_notification: Dostávat notifikace o stažení
+
+  label_remove_original_documents_module: Odstranit původní modul Dokumenty
+
+  text_fulltext_search: 'Full-textové vyhledávání v dokumentech vyžaduje přítomnost %{cmd1} and %{cmd2} na serveru.'
+
+  notice_entries_copied: Kopírování se podařilo
+  notice_entries_moved: Přesun se podařil
+  label_dmsf_file_revision: DMS Dokument rev.
+  error_not_supported_image_format: Nepodporovaný formát obrázku
+  error_not_supported_video_format: Nepodporovaný formát videa
+
+  label_webdav_authentication: WebDAV autentifikace
+  note_webdav_authentication: Autentifikační metoda Basic není považována za bezpečnou a z toho důvodu je blokována
+    některými klienty. Metoda Digest je založena na automaticky vygenerovaném digestu. Uživatelé se pak z WebDAV klienta
+    autentifikují také pomocí uživatelského jména a hesla.
+  label_dmsf_webdav_digest_created_on: "DMS WebDAV digest created %{value} ago"
+  label_missing_dmsf_webdav_digest: Chybějící DMS WebDAV digest
+  label_dmsf_webdav_digest: DMS WebDAV digest
+  text_dmsf_webdav_digest_reset: Je vyžadováno vaše heslo pro vygenerování nového DMS WebDAV digestu.
+  notice_webdav_digest_reset: Váš DMS WebDAV digest byl resetován.
+
+  label_dmsf_commit: Potvrdit
+  label_dmsf_upload_commit: Nahrát a potvrdit
 
   easy_pages:
     modules:
       dmsf_locked_documents: My locked documents
       dmsf_open_approvals: My open approvals
+      dmsf_watched_documents: My watched documents
     module_category:
       easy_dms: Easy DMS
 

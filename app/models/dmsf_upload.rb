@@ -1,11 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+#  Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,25 +18,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Upload
 class DmsfUpload
-  attr_accessor :name
-  attr_accessor :disk_filename
+  attr_accessor :name, :disk_filename, :mime_type, :title, :description, :comment, :major_version, :minor_version,
+                :patch_version, :locked, :workflow, :custom_values, :tempfile_path, :digest, :token
   attr_reader   :size
-  attr_accessor :mime_type
-  attr_accessor :title
-  attr_accessor :description
-  attr_accessor :comment
-  attr_accessor :major_version
-  attr_accessor :minor_version
-  attr_accessor :patch_version
-  attr_accessor :locked
-  attr_accessor :workflow
-  attr_accessor :custom_values
-  attr_accessor :tempfile_path
-  attr_accessor :digest
 
   def disk_file
-    File.join Rails.root, 'tmp', disk_filename
+    Rails.root.join 'tmp', disk_filename
   end
 
   def self.create_from_uploaded_attachment(project, folder, uploaded_file)
@@ -51,6 +37,7 @@ class DmsfUpload
         original_filename: a.filename,
         comment: uploaded_file[:description],
         tempfile_path: a.diskfile,
+        token: uploaded_file[:token],
         digest: a.digest
       }
       DmsfUpload.new project, folder, uploaded
@@ -60,7 +47,29 @@ class DmsfUpload
     end
   end
 
-  def initialize(project, folder, uploaded)
+  def initialize(project, folder = nil, uploaded = nil)
+    unless uploaded
+      @name = ''
+      @disk_filename = ''
+      @mime_type = ''
+      @size = 0
+      @tempfile_path = ''
+      @token = ''
+      @digest = ''
+      if RedmineDmsf.empty_minor_version_by_default?
+        @major_version = 1
+        @minor_version = nil
+      else
+        @major_version = 0
+        @minor_version = 0
+      end
+      @patch_version = nil
+      @workflow = nil
+      revision = DmsfFileRevision.new
+      @custom_values = revision.custom_field_values
+      return
+    end
+
     @name = uploaded[:original_filename]
 
     file = DmsfFile.find_file_by_name(project, folder, @name)
@@ -77,13 +86,19 @@ class DmsfUpload
       Rails.logger.error "Cannot find #{uploaded[:tempfile_path]}"
     end
     @tempfile_path = uploaded[:tempfile_path]
+    @token = uploaded[:token]
     @digest = uploaded[:digest]
 
     if file.nil? || file.last_revision.nil?
       @title = DmsfFileRevision.filename_to_title(@name)
       @description = uploaded[:comment]
-      @major_version = 0
-      @minor_version = 0
+      if RedmineDmsf.empty_minor_version_by_default?
+        @major_version = 1
+        @minor_version = nil
+      else
+        @major_version = 0
+        @minor_version = 0
+      end
       @patch_version = nil
       @workflow = nil
       file = DmsfFile.new
@@ -109,13 +124,11 @@ class DmsfUpload
       # Add default value for CFs not existing
       present_custom_fields = file.last_revision.custom_values.collect(&:custom_field).uniq
       file.last_revision.available_custom_fields.each do |cf|
-        unless present_custom_fields.include?(cf)
-          @custom_values << CustomValue.new({ custom_field: cf, value: cf.default_value}) if cf.default_value
+        if cf.default_value && present_custom_fields.exclude?(cf)
+          @custom_values << CustomValue.new({ custom_field: cf, value: cf.default_value })
         end
       end
     end
-
-    @locked = file && file.locked_for_user?
+    @locked = file&.locked_for_user?
   end
-
 end

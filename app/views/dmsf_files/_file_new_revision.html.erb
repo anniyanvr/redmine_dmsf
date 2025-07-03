@@ -1,29 +1,27 @@
 <%
-# encoding: utf-8
-# 
-# Redmine plugin for Document Management System "Features"
-#
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  # Redmine plugin for Document Management System "Features"
+  #
+  # Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
+  #
+  # This program is free software; you can redistribute it and/or
+  # modify it under the terms of the GNU General Public License
+  # as published by the Free Software Foundation; either version 2
+  # of the License, or (at your option) any later version.
+  #
+  # This program is distributed in the hope that it will be useful,
+  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  # GNU General Public License for more details.
+  #
+  # You should have received a copy of the GNU General Public License
+  # along with this program; if not, write to the Free Software
+  # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 %>
 
 <div class="box tabular">
-    <strong><%= l(:heading_new_revision) %> <a href="#" id="new_revision_form_content_toggle">[+]</a></strong>
+    <strong><%= l(:heading_new_revision) %>
+      <a href="#" id="new_revision_form_content_toggle" data-cy="toggle__new_revision_from_content--dmsf">[+]</a>
+    </strong>
   <div id="new_revision_form_content">
     <% if @file.locked_for_user? %>
       <p class="warning"><%= l(:info_file_locked) %></p>
@@ -77,14 +75,12 @@
           <%= f.text_area :comment, rows: 2, label: l(:label_comment), class: 'wiki-edit dmsf-description' %>
         </p>
         <div class="form-actions">
-          <%= f.submit l(:button_create), class: 'button-positive' %>
+          <%= f.submit l(:button_create), class: 'button-positive', data: { cy: "button__submit--file_dmsf"} %>
         </div>
       <% end %>
     <% end %>   
   </div>  
 </div>
 
-<% if Setting.text_formatting != 'HTML' %>
-  <%= wikitoolbar_for 'dmsf_file_revision_description' %>
-  <%= wikitoolbar_for 'dmsf_file_revision_comment' %>
-<% end %>
+<%= wikitoolbar_for 'dmsf_file_revision_description' %>
+<%= wikitoolbar_for 'dmsf_file_revision_comment' %>

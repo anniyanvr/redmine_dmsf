@@ -1,8 +1,8 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,10 +18,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Add column
 class TitleFormat < ActiveRecord::Migration[4.2]
-
   def change
     add_column :members, :title_format, :text, null: true, limit: 100
   end
-
 end

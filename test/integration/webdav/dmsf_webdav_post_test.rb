@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,8 +20,8 @@
 
 require File.expand_path('../../../test_helper', __FILE__)
 
+# WebDAV POST tests
 class DmsfWebdavPostTest < RedmineDmsf::Test::IntegrationTest
-
   # Test that any post request is authenticated
   def test_post_request_authenticated
     post '/dmsf/webdav/'
@@ -35,5 +33,4 @@ class DmsfWebdavPostTest < RedmineDmsf::Test::IntegrationTest
     post '/dmsf/webdav/', params: nil, headers: @admin
     assert_response :not_implemented
   end
-  
 end

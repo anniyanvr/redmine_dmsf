@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,8 +20,8 @@
 
 require File.expand_path('../../../test_helper', __FILE__)
 
+# WebDAV HEAD tests
 class DmsfWebdavHeadTest < RedmineDmsf::Test::IntegrationTest
-
   fixtures :dmsf_folders, :dmsf_files, :dmsf_file_revisions
 
   def test_head_requires_authentication
@@ -36,7 +34,9 @@ class DmsfWebdavHeadTest < RedmineDmsf::Test::IntegrationTest
     head "/dmsf/webdav/#{@project1.identifier}", params: nil, headers: @admin
     assert_response :success
     check_headers_exist
-    with_settings plugin_redmine_dmsf: {'dmsf_webdav_use_project_names' => '1', 'dmsf_webdav' => '1'} do
+    with_settings plugin_redmine_dmsf: { 'dmsf_webdav_use_project_names' => '1',
+                                         'dmsf_webdav' => '1',
+                                         'dmsf_webdav_authentication' => 'Basic' } do
       head "/dmsf/webdav/#{@project1.identifier}", params: nil, headers: @admin
       assert_response :not_found
       project1_name = RedmineDmsf::Webdav::ProjectResource.create_project_name(@project1)
@@ -46,8 +46,7 @@ class DmsfWebdavHeadTest < RedmineDmsf::Test::IntegrationTest
     end
   end
 
-  # Note:
-  #   At present we use Rack to serve the file, this makes life easy however it removes the Etag
+  # NOTE: At present we use Rack to serve the file, this makes life easy however it removes the Etag
   #   header and invalidates the test - where as a folder listing will always not include a last-modified
   #   (but may include an etag, so there is an allowance for a 1 in 2 failure rate on (optionally) required
   #   headers)
@@ -55,7 +54,9 @@ class DmsfWebdavHeadTest < RedmineDmsf::Test::IntegrationTest
     head "/dmsf/webdav/#{@project1.identifier}/test.txt", params: nil, headers: @admin
     assert_response :success
     check_headers_exist
-    with_settings plugin_redmine_dmsf: {'dmsf_webdav_use_project_names' => '1', 'dmsf_webdav' => '1'} do
+    with_settings plugin_redmine_dmsf: { 'dmsf_webdav_use_project_names' => '1',
+                                         'dmsf_webdav' => '1',
+                                         'dmsf_webdav_authentication' => 'Basic' } do
       head "/dmsf/webdav/#{@project1.identifier}/test.txt", params: nil, headers: @admin
       assert_response :conflict
       project1_name = RedmineDmsf::Webdav::ProjectResource.create_project_name(@project1)
@@ -102,13 +103,14 @@ class DmsfWebdavHeadTest < RedmineDmsf::Test::IntegrationTest
   end
 
   def test_head_file_in_subproject
-    head "/dmsf/webdav/#{@project1.identifier}/#{@project3.identifier}/#{@file12.name}", params: nil, headers: @admin
+    head "/dmsf/webdav/#{@project1.identifier}/#{@project5.identifier}/#{@file12.name}", params: nil, headers: @admin
     assert_response :success
   end
 
   def test_head_folder_in_subproject
-    head "/dmsf/webdav/#{@project1.identifier}/#{@project3.identifier}/#{@folder10.title}", params: nil, headers: @admin
+    head "/dmsf/webdav/#{@project1.identifier}/#{@project5.identifier}/#{@folder10.title}",
+         params: nil,
+         headers: @admin
     assert_response :success
   end
-
 end

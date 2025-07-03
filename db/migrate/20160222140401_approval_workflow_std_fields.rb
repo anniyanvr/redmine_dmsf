@@ -1,8 +1,8 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,24 +18,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Add columns
 class ApprovalWorkflowStdFields < ActiveRecord::Migration[4.2]
-
   def up
-    add_column :dmsf_workflows, :updated_on, :timestamp
-    add_column :dmsf_workflows, :created_on, :datetime
-    add_column :dmsf_workflows, :author_id, :integer
+    change_table :dmsf_workflows, bulk: true do |t|
+      t.column :updated_on, :timestamp
+      t.column :created_on, :datetime
+      t.column :author_id, :integer
+    end
     DmsfWorkflow.reset_column_information
     # Set updated_on
-    DmsfWorkflow.all.each(&:touch)
+    DmsfWorkflow.find_each(&:touch)
     # Set created_on and author_id
     admin_ids = User.active.where(admin: true).limit(1).ids
-    DmsfWorkflow.update_all(['created_on = updated_on, author_id = ?', admin_ids.first])
+    DmsfWorkflow.update_all ['created_on = updated_on, author_id = ?', admin_ids.first]
   end
 
   def down
-    remove_column :dmsf_workflows, :updated_on
-    remove_column :dmsf_workflows, :created_on
-    remove_column :dmsf_workflows, :author_id
+    change_table :dmsf_workflows, bulk: true do |t|
+      t.remove :updated_on
+      t.remove :created_on
+      t.remove :author_id
+    end
   end
-
 end

@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Vít Jonáš <vit.jonas@gmail.com>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,10 +21,11 @@
 require 'tmpdir'
 require 'csv'
 
+# DMSF helper
 module DmsfHelper
   include Redmine::I18n
 
-  unless Redmine::Plugin.installed?(:easy_extensions)
+  unless defined?(EasyExtensions)
 
     def late_javascript_tag(content_or_options_with_block = nil, html_options = {}, &block)
       javascript_tag content_or_options_with_block, html_options, &block
@@ -37,38 +36,21 @@ module DmsfHelper
   def self.temp_filename(filename)
     filename = sanitize_filename(filename)
     timestamp = DateTime.current.strftime('%y%m%d%H%M%S')
-    while File.exist?(File.join(Rails.root, 'tmp', "#{timestamp}_#{filename}"))
-      timestamp.succ!
-    end
+    timestamp.succ! while Rails.root.join("tmp/#{timestamp}_#{filename}").exist?
     "#{timestamp}_#{filename}"
   end
 
   def self.sanitize_filename(filename)
-    # get only the filename, not the whole path
+    # Get only the filename, not the whole path
     just_filename = File.basename(filename.gsub('\\\\', '/'))
-    # replace all non alphanumeric, hyphens or periods with underscore
-    just_filename.gsub!(/[^\w\.\-]/, '_')
-    unless %r{^[a-zA-Z0-9_\.\-]*$}.match?(just_filename)
-      # keep the extension if any
-      if just_filename =~ %r{(\.[a-zA-Z0-9]+)$}
-        extension = $1
-        just_filename = Digest::SHA256.hexdigest(just_filename) << extension
-      end
+    # Replace all non alphanumeric, hyphens or periods with underscore
+    just_filename.gsub!(/[^\w.\-]/, '_')
+    # Keep the extension if any
+    if !/^[a-zA-Z0-9_.\-]*$/.match?(just_filename) && just_filename =~ /(.[a-zA-Z0-9]+)$/
+      extension = Regexp.last_match(1)
+      just_filename = Digest::SHA256.hexdigest(just_filename) << extension
     end
     just_filename
-  end
-
-  def self.filetype_css(filename)
-    extension = File.extname(filename)
-    extension = extension[1, extension.length-1]
-    path = File.join(Redmine::Plugin.public_directory, ['redmine_dmsf', 'images', 'filetypes', "#{extension}.png"])
-    if File.exist?(path)
-      cls = +"filetype-#{extension}";
-    else
-      cls = Redmine::MimeType.css_class_of(filename)
-    end
-    cls << ' dmsf-icon-file' if cls
-    cls
   end
 
   def plugin_asset_path(plugin, asset_type, source)
@@ -84,13 +66,13 @@ module DmsfHelper
     if project
       url << ERB::Util.url_encode(RedmineDmsf::Webdav::ProjectResource.create_project_name(project))
       if folder
-        folders = [ ]
-        while folder do
+        folders = []
+        while folder
           folders << folder
           folder = folder.dmsf_folder
         end
-        folders.reverse.each do |folder|
-          url << folder.title
+        folders.reverse_each do |f|
+          url << f.title
         end
       end
     end
@@ -98,4 +80,23 @@ module DmsfHelper
     url.join '/'
   end
 
+  # Downloads zipped files securely by sanitizing the params[:entry]. Characters considered unsafe
+  # are replaced with a underscore. The file_path is joined with File.join instead of Rails.root.join to eliminate
+  # the risk of overriding the absolute path (Rails.root/tmp) with file_name when given as absoulte path too. This
+  # makes the path double secure.
+  def email_entry_tmp_file_path(entry)
+    sanitized_entry = DmsfHelper.sanitize_filename(entry)
+    file_name = "#{RedmineDmsf::DmsfZip::FILE_PREFIX}#{sanitized_entry}.zip"
+    # rubocop:disable Rails/FilePath
+    File.join(Rails.root.to_s, 'tmp', file_name)
+    # rubocop:enable Rails/FilePath
+  end
+
+  # Extracts the variable part of the temp file name to be used as identifier in the
+  # download email entries route.
+  def tmp_entry_identifier(zipped_content)
+    path = Pathname.new(zipped_content)
+    zipped_file = path.basename(path.extname).to_s
+    zipped_file.delete_prefix(RedmineDmsf::DmsfZip::FILE_PREFIX)
+  end
 end

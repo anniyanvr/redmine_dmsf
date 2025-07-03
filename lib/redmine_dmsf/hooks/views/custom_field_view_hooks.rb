@@ -1,8 +1,8 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,28 +21,23 @@
 module RedmineDmsf
   module Hooks
     module Views
-
+      # Custom field view hooks
       class CustomFieldViewHooks < Redmine::Hook::ViewListener
-
-        def view_custom_fields_form_dmsf_file_revision_custom_field(context={})
-          html = ''
+        def view_custom_fields_form_dmsf_file_revision_custom_field(context = {})
+          html = +''
           if context.is_a?(Hash) && context[:form]
             # Add the inheritable option
             f = context[:form]
-            html = "<p>#{f.check_box(:dmsf_not_inheritable)}</p>"
+            html = content_tag(:p, f.check_box(:dmsf_not_inheritable))
             # Add is filter option
             if context[:custom_field]
               custom_field = context[:custom_field]
-              if custom_field.format.is_filter_supported
-                html << "<p>#{f.check_box(:is_filter)}</p>"
-              end
+              html << content_tag(:p, f.check_box(:is_filter)) if custom_field.format.is_filter_supported
             end
           end
-          html.html_safe
+          html
         end
-
       end
-
     end
   end
 end

@@ -1,8 +1,8 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,19 +18,22 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Add columns
 class TrashBin < ActiveRecord::Migration[4.2]
-
-  def up  
+  def up
     # DMSF - project's root folder notification
-    add_column :dmsf_folders, :deleted, :boolean, default: false, null: false
-    add_column :dmsf_folders, :deleted_by_user_id, :integer
+    change_table :dmsf_folders, bulk: true do |t|
+      t.column :deleted, :boolean, default: false, null: false
+      t.column :deleted_by_user_id, :integer
+    end
     DmsfFolder.reset_column_information
-    DmsfFolder.update_all(deleted: false)
-  end
-  
-  def down
-    remove_column :dmsf_folders, :deleted
-    remove_column :dmsf_folders, :deleted_by_user_id
+    DmsfFolder.update_all deleted: false
   end
 
+  def down
+    change_table :dmsf_folders, bulk: true do |t|
+      t.remove :deleted
+      t.remove :deleted_by_user_id
+    end
+  end
 end

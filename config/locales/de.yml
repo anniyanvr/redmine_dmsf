@@ -1,10 +1,7 @@
-# encoding: utf-8
 #
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Terrence Miller
-# Copyright © 2013    Christian Wetting <christian.wetting@kontron.com>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Terrence Miller, Christian Wetting <christian.wetting@kontron.com>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,6 +19,7 @@
 
 de:
   dmsf: DMS # Custom fields tab title
+  label_dmsf_file: DMS Dokument
   label_dmsf_file_plural: DMS Dokumente # E-Mail subject & Search options
   label_dmsf_file_revision_plural: Dokumentenversion
   label_dmsf_file_revision_access_plural: Dokumentenzugriffe
@@ -105,8 +103,8 @@ de:
   select_option_default: Voreinstellung
   select_option_deactivated: Aus
   select_option_activated: Ein
-  label_title_format: Title format
-  text_title_format: "Format des Dokumente-Titels für Speichern (%t - Titel, %f - Datei, %d - Datum, %v - Version, %i -
+  label_title_format: Titelformat
+  text_title_format: "Format für den Titel eines Dokuments beim erstmaligen Speichern (%t - Titel, %f - Datei, %d - Datum, %v - Version, %i -
     ID, %r - Revision). z.B.: %t_%v"
   title_save_preferences: Einstellungen speichern
   heading_revisions: Versionen
@@ -163,7 +161,7 @@ de:
   label_file: Datei
   field_folder: Ordner
   error_file_commit_require_uploaded_file: Das Hinzufügen erfordet eine hochgeladene Datei
-  warning_some_files_were_not_commited: "Einige Dateien wurden wegen Validierungsfehlern nicht hinzugefügt: %{files}"
+  warning_some_files_were_not_committed: "Einige Dateien wurden wegen Validierungsfehlern nicht hinzugefügt: %{files}"
   error_user_has_not_right_delete_folder: Der Nutzer hat kein Recht den Ordner zu löschen.
   error_user_has_not_right_delete_file: Der Nutzer hat kein Recht die Datei zu löschen.
   notice_entries_deleted: Einträge löschen
@@ -252,11 +250,11 @@ de:
   title_none: Kein Workflow
   title_rejection: Ablehnung
   title_delegation: Delegierung
-  title_assignment: Workflow starten
-  title_start: Start
+  title_assignment: Workflow zuordnen
+  title_start: Workflow starten
   title_dmsf_workflow_log: Genehmigungs-Workflow Verlauf
   title_assigned: Zugewiesen
-  title_approval: Genehmigt
+  title_approval: Dokument genehmigen
   title_rejected: Abgelehnt
   title_obsolete: Veraltet
   dmsf_and: UND
@@ -264,7 +262,7 @@ de:
   dmsf_new_step: Neuer Schritt
   dmsf_new_step_or_approver: Neuer Schritt oder Neuer Genehmiger
   message_dmsf_wokflow_note: Ihre Notiz...
-  info_revision: "r%{rev}"
+  info_revision: "r %{rev}"
   link_workflow: Workflow
   notice_workflow_started: Genehmigungs-Workflow gestartet
   text_email_subject_approved: genehmigt
@@ -351,7 +349,7 @@ de:
   note_webdav_ignore: Regulärer Ausdruck (regular expression) mit Dateinamen, die bei PUT-Requests ignoriert werden.
 
   label_document_url: Url
-  label_last_revision_id: Version
+  label_last_revision_id: Revision
     
   label_webdav_disable_versioning: Keine Versionen erstellen bei
   note_webdav_disable_versioning: Regulärer Ausdruck (regular expression) bei denen die Datei-Versionierung ausgeschaltet wird. Die Standardeinstellung
@@ -367,7 +365,7 @@ de:
 
   label_last_approver: Letzter Genehmiger
 
-  label_act_as_attachable: Act as attachable
+  label_act_as_attachable: DMS Anhänge
   note_dmsf_act_as_attachable: Erlaubt das Hinzufügen von Dokumenten zu anderen Objekten (z.B. Tickets)
 
   label_user_search_add: Benutzer suchen
@@ -389,7 +387,7 @@ de:
   text_dmsf_fast_links_info: Ermöglicht durch Eingabe der Ordner-ID auf einfache Art und Weise eine Verknüpfung 
     auf den Zielordner zu erstellen.
 
-  label_dmsf_permissions: Zugriff erlaubt für
+  label_dmsf_permissions: Zugriff ausschließlich erlaubt für
   label_inherited_permissions: Zugriff vererbt für
 
   button_edit_content: Dokument bearbeiten
@@ -400,6 +398,7 @@ de:
   field_first_at: Erste
   field_last_at: Letzte
   field_size: Größe
+  field_locked: Gesperrt
 
   label_add_width: Zugeben mit
 
@@ -419,30 +418,30 @@ de:
   title_start_minor: Start nicht erlaubt, Unterversion muss Null lauten
   title_approval_minor: Genehmigung nicht erlaubt, Unterversion muss Null lauten
 
-  label_project_watchers: Watchers
-  label_dmsf_folder_watchers: Watchers
-  label_dmsf_file_watchers: Watchers
-  label_dmsf_watched: Watched documents
-  dmsf_legacy_notifications: Legacy DMS notifications
-  permission_view_dmsf_folder_watchers: View folder's watchers
-  permission_add_dmsf_folder_watchers: Add folder's watchers
-  permission_delete_dmsf_folder_watchers: Delete folder's watchers
-  permission_view_dmsf_file_watchers: View document's watchers
-  permission_add_dmsf_file_watchers: Add document's watchers
-  permission_delete_dmsf_file_watchers: Delete document's watchers
-  permission_view_project_watchers: View project's watchers
-  permission_add_project_watchers: Add project's watchers
-  permission_delete_project_watchers: Delete project's watchers
-  label_dmsf_new_top_level_document: New top level DMS document
-  label_dmsf_new_top_level_folder: New top level DMS folder
+  label_project_watchers: Beobachter
+  label_dmsf_folder_watchers: Beobachter
+  label_dmsf_file_watchers: Beobachter
+  label_dmsf_watched: Beobachtete Dokumente
+  label_dmsf_legacy_notifications: DMS Dokument oder Verzeichnis aktualisiert
+  permission_view_dmsf_folder_watchers: Liste der Beobachter von Verzeichnissen ansehen
+  permission_add_dmsf_folder_watchers: Beobachter von Verzeichnissen hinzufügen
+  permission_delete_dmsf_folder_watchers: Beobachter von Verzeichnissen löschen
+  permission_view_dmsf_file_watchers: Liste der Beobachter eines Dokuments ansehen
+  permission_add_dmsf_file_watchers: Beobachter von Dokumenten hinzufügen
+  permission_delete_dmsf_file_watchers: Beobachter von Dokumenten löschen
+  permission_view_project_watchers: Liste der Beobachter vom DMS ansehen
+  permission_add_project_watchers: Beobachter vom DMS hinzufügen
+  permission_delete_project_watchers: Beobachter vom DMS löschen
+  label_dmsf_new_top_level_document: Neues DMS-Dokument auf oberster Ebene hinzufügen
+  label_dmsf_new_top_level_folder: Neues DMS-Verzeichnis auf oberster Ebene hinzufügen
 
-  label_dmsf_max_notification_receivers_info: Maximum notification receivers info
-  note_dmsf_max_notification_receivers_info: Limits maximum number of displayed email notification receivers.
-  label_dmsf_office_bin: Libreoffice binary
-  note_dmsf_office_bin: A binary to convert office documents to PDF format and provide their preview. If you want
-    to prevent previews of office documents, put an empty string here. After a change, you might have to restart the
-    application to take it any effect.
-  note_dmsf_office_bin_not_available: "LibreOffice's command line binary '%{value}' not available"
+  label_dmsf_max_notification_receivers_info: Maximale Anzahl von E-Mail-Empfängern
+  note_dmsf_max_notification_receivers_info: Begrenzt die Anzahl der angezeigten Empfänger von E-Mail-Benachrichtigungen.
+  label_dmsf_office_bin: LibreOffice Binärdatei
+  note_dmsf_office_bin: "Eine Binärdatei zum Umwandeln von Office-Dokumenten in ein PDF, um so eine Vorschau anzeigen zu können. 
+    Wenn Sie keine Vorschau anzeigen lassen möchten, geben Sie einen leeren String ein: ''. Der Server muss neu 
+    gestartet werden, damit die Änderung wirksam wird."
+  note_dmsf_office_bin_not_available: "LibreOffice's Binärdatei für die Kommandozeile '%{value}' ist nicht verfügbar."
 
   label_dmsf_columns: DMS Spalten
   label_column_id: ID
@@ -452,14 +451,47 @@ de:
   label_column_version: Version
   label_column_workflow: Workflow
   label_column_author: Autor
+  label_column_description: Beschreibung
+  label_column_comment: Kommentar
 
-  label_dmsf_global_menu_disabled: Global DMS menu disabled
-  note_dmsf_global_menu_disabled: If yes, DMS menu item is not present in the top menu.
+  label_dmsf_global_menu_disabled: Globales DMS Menü deaktiviert
+  note_dmsf_global_menu_disabled: Falls ja, wird das DMS Menüelement im Top Menü nicht erscheinen.
+  error_dmsf_workflow_assigned: Der verwendete Genehmigungs-Workflow kann weder bearbeitet noch gelöscht werden.
+
+  label_empty_minor_version_by_default: Leere Unterversion als Standard
+  text_email_doc_downloaded_subject: Dokumenten wurden herunterladen
+  text_email_doc_downloaded: hat folgende Dokumente herunterladen
+  field_default_dmsf_query: Standard-DMS-Abfrage
+  field_receive_download_notification: Benachrichtigung über heruntergeladene Dokumente
+
+  label_remove_original_documents_module: Original Projektmodule Dokumente entfernen
+
+  text_fulltext_search: 'Full-text Suche in Dokumente fordert die Existenz %{cmd1} and %{cmd2} auf dem Server.'
+
+  notice_entries_copied: Kopieren ist gelungen
+  notice_entries_moved: Verschieben ist gelungen
+  label_dmsf_file_revision: DMS Dokument Rev.
+  error_not_supported_image_format: Nicht unterstütztes Bildformat
+  error_not_supported_video_format: Nicht unterstütztes Videoformat
+
+  label_webdav_authentication: WebDAV Authentifizierung
+  note_webdav_authentication: Die Basis-Authentifizierungsmethode gilt als unsicher und wird daher von einigen Clients blockiert
+    Die Digest-Authentifizierung basiert auf einem automatisch generierten Digest. Die Benutzer verwenden ihre Anmeldung und ihr Kennwort zur
+    Authentifizierung auch in ihren WebDAV-Clients.
+  label_dmsf_webdav_digest_created_on: "DMS WebDAV Digest vor %{value} erstellt"
+  label_missing_dmsf_webdav_digest: DMS WebDAV Digest fehlt
+  label_dmsf_webdav_digest: DMS WebDAV Digest
+  text_dmsf_webdav_digest_reset: Bitte geben Sie Ihr Passwort ein, um einen neuen DMS WebDAV Digest zu generieren.
+  notice_webdav_digest_reset: Ihr DMS WebDAV Digest wurde zurückgesetzt.
+
+  label_dmsf_commit: Commit
+  label_dmsf_upload_commit: Hochladen und Commit
 
   easy_pages:
     modules:
       dmsf_locked_documents: Von mir gesperrte Dokumente
       dmsf_open_approvals: Offene Genehmigungen
+      dmsf_watched_documents: Meine beobachteten Dokumente
     module_category:
       easy_dms: Easy DMS
 

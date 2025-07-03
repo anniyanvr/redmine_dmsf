@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,21 +21,17 @@
 module RedmineDmsf
   module Hooks
     module Views
-
+      # Search view hooks
       class SearchViewHooks < Redmine::Hook::ViewListener
+        def view_search_index_container(context = {})
+          return unless context[:object].is_a?(DmsfFile) || context[:object].is_a?(DmsfFolder)
 
-        def view_search_index_container(context={})
-          if context[:object].is_a?(DmsfFile) || context[:object].is_a?(DmsfFolder)
-            str = context[:controller].send(:render_to_string, partial: 'search/container',
-              locals: { object: context[:object] })
-            if str
-              " #{str} /"
-            end
-          end
+          str = context[:controller].send(:render_to_string,
+                                          partial: 'search/container',
+                                          locals: { object: context[:object] })
+          " #{str} /" if str
         end
-
       end
-
     end
   end
 end

@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,8 +20,8 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
+# project tests
 class ProjectPatchTest < RedmineDmsf::Test::UnitTest
-
   fixtures :dmsf_links, :dmsf_workflows, :dmsf_locks, :dmsf_folders, :dmsf_files, :dmsf_file_revisions
 
   def test_project_has_dmsf_files
@@ -53,10 +52,14 @@ class ProjectPatchTest < RedmineDmsf::Test::UnitTest
     assert @project1.respond_to?(:dmsf_links)
   end
 
+  def test_project_has_default_dmsf_query
+    assert @project1.respond_to?(:default_dmsf_query)
+  end
+
   def test_dmsf_count
     User.current = @jsmith
     hash = @project1.dmsf_count
-    assert_equal 10, hash[:files]
+    assert_equal 9, hash[:files]
     assert_equal 5, hash[:folders]
   end
 
@@ -76,36 +79,31 @@ class ProjectPatchTest < RedmineDmsf::Test::UnitTest
     assert_equal 1, @project1.folder_links.visible.all.size
     assert_equal 0, @project1.url_links.visible.all.size
 
-    assert_equal 1, @project3.dmsf_files.visible.all.size
-    assert_equal 0, @project3.dmsf_folders.visible.all.size
-    assert_equal 0, @project3.file_links.visible.all.size
-    assert_equal 0, @project3.folder_links.visible.all.size
-    assert_equal 0, @project3.url_links.visible.all.size
+    assert_equal 1, @project5.dmsf_files.visible.all.size
+    assert_equal 1, @project5.dmsf_folders.visible.all.size
+    assert_equal 0, @project5.file_links.visible.all.size
+    assert_equal 0, @project5.folder_links.visible.all.size
+    assert_equal 0, @project5.url_links.visible.all.size
 
-    @project3.copy_dmsf @project1
+    @project5.copy_dmsf @project1
 
-    assert_equal 6, @project3.dmsf_files.visible.all.size
-    assert_equal 0, @project3.dmsf_folders.visible.all.size
-    assert_equal 2, @project3.file_links.visible.all.size
-    assert_equal 1, @project3.folder_links.visible.all.size
-    assert_equal 0, @project3.url_links.visible.all.size
+    assert_equal 6, @project5.dmsf_files.visible.all.size
+    assert_equal 4, @project5.dmsf_folders.visible.all.size
+    assert_equal 2, @project5.file_links.visible.all.size
+    assert_equal 1, @project5.folder_links.visible.all.size
+    assert_equal 0, @project5.url_links.visible.all.size
   end
 
   def test_dmsf_avaliable
-    # @project1
-    # L @project3
+    # @project1 (:dmsf, manager)
+    #   L @project3 (:dmsf), @project4, @project5
+    User.current = @jsmith
     assert @project1.dmsf_available?
-    assert @project3.dmsf_available?
-    @project1.disable_module! :dmsf
-    assert @project3.dmsf_available?
-    @project3.disable_module! :dmsf
-    @project3.reload
-    assert !@project3.dmsf_available?
+    assert_not @project3.dmsf_available?
   end
 
   def test_watchable
     @project1.add_watcher @jsmith
     assert @project1.watched_by?(@jsmith)
   end
-
 end

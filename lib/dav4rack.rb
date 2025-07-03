@@ -1,11 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+#  Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,12 +25,12 @@ require 'ox'
 require 'digest'
 require 'rack'
 
-require File.dirname(__FILE__) + '/dav4rack/utils'
-require File.dirname(__FILE__) + '/dav4rack/http_status'
-require File.dirname(__FILE__) + '/dav4rack/resource'
-require File.dirname(__FILE__) + '/dav4rack/handler'
-require File.dirname(__FILE__) + '/dav4rack/controller'
+require "#{File.dirname(__FILE__)}/dav4rack/utils"
+require "#{File.dirname(__FILE__)}/dav4rack/http_status"
+require "#{File.dirname(__FILE__)}/dav4rack/resource"
+require "#{File.dirname(__FILE__)}/dav4rack/handler"
+require "#{File.dirname(__FILE__)}/dav4rack/controller"
 
 module Dav4rack
-  IS_18 = RUBY_VERSION[0,3] == '1.8'
+  IS_18 = RUBY_VERSION[0, 3] == '1.8'
 end

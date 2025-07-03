@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,33 +20,34 @@
 
 module RedmineDmsf
   module Webdav
+    # Project resource
     class ProjectResource < BaseResource
       include Redmine::I18n
 
       def children
-        unless @children          
-          @children = []
-          if project
-            # Sub-projects
-            load_projects(project.children) if Setting.plugin_redmine_dmsf['dmsf_projects_as_subfolders']
-            if project.module_enabled?(:dmsf)
-              # Folders
-              if User.current.allowed_to?(:view_dmsf_folders, project)
-                project.dmsf_folders.visible.pluck(:title).each do |title|
-                  @children.push child(title)
-                end
-              end
-              # Files
-              if User.current.allowed_to?(:view_dmsf_files, project)
-                project.dmsf_files.visible.pluck(:name).each do |name|
-                  @children.push child(name)
-                end
-              end
-            end
+        return @children if @children
+
+        @children = []
+        return @children unless project
+
+        # Sub-projects
+        load_projects(project.children) if RedmineDmsf.dmsf_projects_as_subfolders?
+        return @children unless project.module_enabled?(:dmsf)
+
+        # Folders
+        if User.current.allowed_to?(:view_dmsf_folders, project)
+          project.dmsf_folders.visible.pluck(:title).each do |title|
+            @children.push child(title)
+          end
+        end
+        # Files
+        if User.current.allowed_to?(:view_dmsf_files, project)
+          project.dmsf_files.visible.pluck(:name).each do |name|
+            @children.push child(name)
           end
         end
         @children
-      end      
+      end
 
       def exist?
         project&.visible?
@@ -67,7 +66,8 @@ module RedmineDmsf
       end
 
       def etag
-        sprintf '%x-%x-%x', 0, 4096, (last_modified ? last_modified.to_i : 0)
+        format '%<inode>x-%<size>x-%<modified>x',
+               inode: 0, size: 4096, modified: (last_modified ? last_modified.to_i : 0)
       end
 
       def name
@@ -90,7 +90,7 @@ module RedmineDmsf
         4096
       end
 
-      def get(request, response)
+      def get(_request, response)
         html_display
         response['Content-Length'] = response.body.bytesize.to_s
         response['Content-Type'] = 'text/html'
@@ -98,10 +98,10 @@ module RedmineDmsf
       end
 
       def make_collection
-         MethodNotAllowed
+        MethodNotAllowed
       end
 
-      def move(dest, overwrite)
+      def move(_dest)
         MethodNotAllowed
       end
 
@@ -109,23 +109,21 @@ module RedmineDmsf
         MethodNotAllowed
       end
 
-      def lock(args)
+      def lock(_args)
         e = Dav4rack::LockFailure.new
         e.add_failure @path, MethodNotAllowed
         raise e
       end
 
       def self.create_project_name(prj)
-        if prj
-          if Setting.plugin_redmine_dmsf['dmsf_webdav_use_project_names']
-            "[#{DmsfFolder::get_valid_title(prj.name)} #{prj.id}]"
-          else
-            "[#{prj.identifier}]"
-          end
+        return unless prj
+
+        if RedmineDmsf.dmsf_webdav_use_project_names?
+          "[#{DmsfFolder.get_valid_title(prj.name)} #{prj.id}]"
+        else
+          "[#{prj.identifier}]"
         end
       end
-
     end
   end
-
 end

@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,9 +18,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Folder permissions controller
 class DmsfFolderPermissionsController < ApplicationController
-
-  before_action :find_folder, only: [:destroy, :new, :autocomplete_for_user], if: -> { params[:dmsf_folder_id].present?}
+  before_action :find_folder,
+                only: %i[destroy new autocomplete_for_user],
+                if: -> { params[:dmsf_folder_id].present? }
   before_action :find_project
   before_action :authorize
   before_action :permissions
@@ -55,8 +56,8 @@ class DmsfFolderPermissionsController < ApplicationController
     scope = Principal.active.visible.member_of(@project).like(params[:q]).order(:type, :lastname)
     if @dmsf_folder
       users = @dmsf_folder.permissions_users
-      if(users.any?)
-        ids = users.collect{ |u| u.id }
+      if users.any?
+        ids = users.collect(&:id)
         scope = scope.where.not(id: ids)
       end
     end
@@ -65,18 +66,17 @@ class DmsfFolderPermissionsController < ApplicationController
 
   def find_project
     @project = Project.visible.find_by_param(params[:project_id])
-  rescue RedmineDmsf::Errors::DmsfAccessError
+  rescue DmsfAccessError
     render_403
   rescue ActiveRecord::RecordNotFound
     render_404
   end
 
   def find_folder
-    @dmsf_folder = DmsfFolder.visible.find_by!(id: params[:dmsf_folder_id])
-  rescue RedmineDmsf::Errors::DmsfAccessError
+    @dmsf_folder = DmsfFolder.visible.find(params[:dmsf_folder_id])
+  rescue DmsfAccessError
     render_403
   rescue ActiveRecord::RecordNotFound
     render_404
   end
-
 end

@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,6 +20,7 @@
 
 require File.expand_path('../../../test_helper', __FILE__)
 
+# DMSF API
 class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
   include Redmine::I18n
 
@@ -108,5 +108,59 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
     assert_select 'node > filename', text: @file9.last_revision.name
     assert_select 'node > target_id', text: @folder_link1.target_id.to_s
     assert_select 'node > target_project_id', text: @folder_link1.target_project_id.to_s
+  end
+
+  def test_copy_entries
+    # curl -v -H "Content-Type: application/xml" -X POST --data "@entries.xml" -H "X-Redmine-API-Key: ${USER_API_KEY}" \
+    # "http://localhost:3000/projects/3342/dmsf/entries.xml?ids[]=file-254566&copy_entries=true"
+    payload = %(
+      <dmsf_entries>
+        <target_project_id>#{@project1.id}</target_project_id>
+        <target_folder_id>#{@folder1.id}</target_folder_id>
+      </dmsf_entries>
+    )
+    assert_difference('@folder1.dmsf_files.count', 1) do
+      post "/projects/#{@project1.id}/dmsf/entries.xml?ids[]=file-#{@file1.id}&copy_entries=true&key=#{@token.value}",
+           params: payload,
+           headers: { 'CONTENT_TYPE' => 'application/xml' }
+    end
+    assert_response :redirect
+  end
+
+  def test_move_entries
+    # curl -v -H "Content-Type: application/xml" -X POST --data "@entries.xml" -H "X-Redmine-API-Key: ${USER_API_KEY}" \
+    # "http://localhost:3000/projects/3342/dmsf/entries.xml?ids[]=file-254566&move_entries=true"
+    payload = %(
+      <dmsf_entries>
+        <target_project_id>#{@project1.id}</target_project_id>
+        <target_folder_id>#{@folder1.id}</target_folder_id>
+      </dmsf_entries>
+    )
+    assert_difference('@folder1.dmsf_files.count', 1) do
+      post "/projects/#{@project1.id}/dmsf/entries.xml?ids[]=file-#{@file1.id}&move_entries=true&key=#{@token.value}",
+           params: payload,
+           headers: { 'CONTENT_TYPE' => 'application/xml' }
+    end
+    assert_response :redirect
+  end
+
+  def test_download_entries
+    # curl -v -H "Content-Type: application/xml" -X POST --data "" -H "X-Redmine-API-Key: ${USER_API_KEY}" \
+    # "http://localhost:3000/projects/3342/dmsf/entries.xml?ids[]=file-254566"
+    post "/projects/#{@project1.id}/dmsf/entries.xml?ids[]=file-#{@file1.id}&key=#{@token.value}",
+         params: '',
+         headers: { 'CONTENT_TYPE' => 'application/octet-stream' }
+    assert_response :success
+  end
+
+  def test_delete_entries
+    # curl -v -H "Content-Type: application/xml" -X POST --data "" -H "X-Redmine-API-Key: ${USER_API_KEY}" \
+    # "http://localhost:3000/projects/3342/dmsf/entries.xml?ids[]=file-254566&delete_entries=true"
+    assert_difference('@project1.dmsf_files.visible.count', -1) do
+      post "/projects/#{@project1.id}/dmsf/entries.xml?ids[]=file-#{@file1.id}&delete_entries=true&key=#{@token.value}",
+           params: '',
+           headers: { 'CONTENT_TYPE' => 'application/xml' }
+    end
+    assert_response :redirect
   end
 end

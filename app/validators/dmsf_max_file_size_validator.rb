@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Vít Jonáš <vit.jonas@gmail.com>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,17 +18,19 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-class DmsfMaxFileSizeValidator  < ActiveModel::EachValidator
-
+# Max file size validator
+class DmsfMaxFileSizeValidator < ActiveModel::EachValidator
   include Redmine::I18n
 
   def validate_each(record, attribute, value)
     if value && (value > Setting.attachment_max_size.to_i.kilobytes)
-      record.errors.add attribute, l(:error_attachment_too_big,
-        max_size: ActiveSupport::NumberHelper.number_to_human_size(Setting.attachment_max_size.to_i.kilobytes))
-      return false
+      record.errors.add attribute,
+                        l(:error_attachment_too_big, max_size: ActiveSupport::NumberHelper.number_to_human_size(
+                          Setting.attachment_max_size.to_i.kilobytes
+                        ))
+      false
+    else
+      true
     end
-    true
   end
-
 end

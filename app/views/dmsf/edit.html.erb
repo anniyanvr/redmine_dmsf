@@ -1,25 +1,21 @@
 <%
-# encoding: utf-8
-#
-# Redmine plugin for Document Management System "Features"
-#
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  # Redmine plugin for Document Management System "Features"
+  #
+  # Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
+  #
+  # This program is free software; you can redistribute it and/or
+  # modify it under the terms of the GNU General Public License
+  # as published by the Free Software Foundation; either version 2
+  # of the License, or (at your option) any later version.
+  #
+  # This program is distributed in the hope that it will be useful,
+  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  # GNU General Public License for more details.
+  #
+  # You should have received a copy of the GNU General Public License
+  # along with this program; if not, write to the Free Software
+  # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 %>
 
 <% html_title l(:dmsf) %>
@@ -27,12 +23,15 @@
 <div class="contextual">
   <% if !@folder.new_record? && User.current.allowed_to?(:folder_manipulation, @project) && !@folder.system %>
     <% if @folder.locked? %>
-      <%= link_to_if @folder.unlockable? && (!@folder.locked_for_user? || @force_file_unlock_allowed), l(:button_unlock),
-        unlock_dmsf_path(id: @project, folder_id: @folder, back_url: edit_dmsf_url(id: @project, folder_id: @folder)),
+      <%= link_to_if @folder.unlockable? && (!@folder.locked_for_user? || @force_file_unlock_allowed),
+                     sprite_icon('unlock', l(:button_unlock)),
+                     unlock_dmsf_path(id: @project, folder_id: @folder,
+                                      back_url: edit_dmsf_url(id: @project, folder_id: @folder)),
       title: l(:title_unlock_file), class: 'icon icon-unlock' %>
     <% else %>
-      <%= link_to l(:button_lock), lock_dmsf_path(id: @project, folder_id: @folder,
-                                                  back_url: edit_dmsf_url(id: @project, folder_id: @folder)),
+      <%= link_to sprite_icon('lock', l(:button_lock)),
+                  lock_dmsf_path(id: @project, folder_id: @folder,
+                                 back_url: edit_dmsf_url(id: @project, folder_id: @folder)),
         title: l(:title_lock_file), class: 'icon icon-lock' %>
     <% end %>
     <% if defined?(EasyExtensions) %>
@@ -99,13 +98,13 @@
           <% end %>
         <% end %>
         <span id="inherited_user_permissions">
-          <br/>
+          <br>
           <% users = dir.permissions_users %>
-          <% checkboxes = users_checkboxes(users, true) %>
+          <% checkboxes = users_checkboxes(users, inherited: true) %>
           <%= checkboxes %>
         </span>
         <% if checkboxes.present? %>
-          <br/>
+          <br>
         <% end %>
       <% end %>
       <%= label_tag '', l(:label_dmsf_permissions) %>
@@ -117,16 +116,16 @@
         </label>
       <% end %>
       <span id="user_permissions">
-        <br/>
+        <br>
         <% users = @folder.permissions_users %>
         <% checkboxes = users_checkboxes(users) %>
         <%= checkboxes %>
       </span>
         <% if checkboxes.present? %>
-        <br/>
+        <br>
       <% end %>
       <span class="search_for_watchers">
-        <%= link_to l(:label_user_search_add),
+        <%= link_to sprite_icon('add', l(:label_search_for_watchers), size: 12),
           new_dmsf_folder_permissions_path(project_id: @project, dmsf_folder_id: @folder),
           remote: true,
           method: :get %>
@@ -138,10 +137,9 @@
     <% end %>    
   </div>
   <div class="form-actions">
-    <%= submit_tag create ? l(:button_create) : l(:submit_save), class: 'button-positive' %>
+    <%= submit_tag create ? l(:button_create) : l(:submit_save), class: 'button-positive',
+                   data: { cy: "button__submit--dmsf_folder" } %>
   </div>
 <% end %>
 
-<% if Setting.text_formatting != 'HTML' %>
-  <%= wikitoolbar_for 'dmsf_folder_description' %>
-<% end %>
+<%= wikitoolbar_for 'dmsf_folder_description' %>

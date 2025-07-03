@@ -1,11 +1,7 @@
 <%
-  # encoding: utf-8
-  #
   # Redmine plugin for Document Management System "Features"
   #
-  # Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-  # Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-  # Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+  # Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
   #
   # This program is free software; you can redistribute it and/or
   # modify it under the terms of the GNU General Public License
@@ -25,13 +21,15 @@
 <% html_title l(:dmsf) %>
 <% if @project %>
   <div class="contextual">
-    <% unless @locked_for_user || @system_folder  %>
+    <% unless @locked || @system_folder %>
       <% if @file_manipulation_allowed %>
-        <%= link_to l(:label_document_new), multi_dmsf_upload_path(id: @project, folder_id: @folder),
-                class: 'icon icon-add' %>
+        <%= link_to sprite_icon('add', l(:label_document_new)),
+                    multi_dmsf_upload_path(id: @project, folder_id: @folder), class: 'icon icon-add',
+                    data: { cy: 'button__new-file--dmsf' } %>
       <% end %>
       <% if @folder_manipulation_allowed %>
-        <%= link_to l(:link_create_folder), new_dmsf_path(id: @project, parent_id: @folder), class: 'icon icon-add' %>
+        <%= link_to sprite_icon('add', l(:link_create_folder)), new_dmsf_path(id: @project, parent_id: @folder),
+                    class: 'icon icon-add', data: { cy: 'button__create-folder--dmsf' } %>
       <% end %>
     <% end %>
     <% if defined?(EasyExtensions) %>
@@ -40,7 +38,7 @@
           system_folder: @system_folder,
           folder: @folder,
           project: @project,
-          locked_for_user: @locked_for_user,
+          locked: @locked,
           file_manipulation_allowed: @file_manipulation_allowed,
           trash_enabled: @trash_enabled,
           notifications: @notifications } %>
@@ -51,7 +49,7 @@
             system_folder: @system_folder,
             folder: @folder,
             project: @project,
-            locked_for_user: @locked_for_user,
+            locked: @locked,
             file_manipulation_allowed: @file_manipulation_allowed,
             trash_enabled: @trash_enabled,
             notifications: @notifications} %>
@@ -67,7 +65,9 @@
 <%= form_tag(@project ? dmsf_folder_path(id: @project, folder_id: @folder) : dmsf_index_path,
              method: :get, id: 'query_form', class: 'dmsf-query-form') do %>
   <%= hidden_field_tag('folder_id', @folder.id) if @folder %>
-  <%= render partial: 'queries/query_form' %>
+  <div id="dmsf-query-form">
+    <%= render partial: 'queries/query_form' %>
+  </div>
 <% end %>
 <% if @query.valid? %>
   <% if @dmsf_count == 0 %>
@@ -80,12 +80,14 @@
 
 <%= context_menu %>
 
-<% unless @folder && @folder.system %>
+<% if !@folder&.system && (@project || RedmineDmsf.dmsf_webdav?) %>
     <% other_formats_links do |f| %>
-      <%= f.link_to 'CSV', url: { action: :show, id: @project, folder_id: @folder, encoding: Encoding::UTF_8 } if @project %>
-      <% if Setting.plugin_redmine_dmsf['dmsf_webdav'].present? %>
+      <% if @project %>
+        <%= f.link_to 'CSV', url: { action: :show, id: @project, folder_id: @folder, encoding: Encoding::UTF_8 } %>
+      <% end %>
+      <% if RedmineDmsf.dmsf_webdav? %>
         <span>
-          <%= link_to 'WebDAV', webdav_url(@project, @folder) %>
+          <%= link_to 'WebDAV', webdav_url(@project, @folder), class: 'webdav' %>
         </span>
       <% end %>
     <% end %>
@@ -95,25 +97,14 @@
   <%= render partial: 'dmsf/sidebar' %>
 
   <% project_or_folder = @folder? @folder : @project %>
-  <% if project_or_folder&.watchers.present? %>
+  <% if project_or_folder&.watchers.present? && User.current.allowed_to?(:view_dmsf_folder_watchers, @project) %>
     <div id="watchers">
-      <% if @folder %>
-        <%= render partial: 'watchers/watchers', locals: { watched: @folder } %>
-      <% else %>
-        <% if User.current.allowed_to?(:add_project_watchers, @project) %>
-          <div class="contextual">
-            <%= link_to l(:button_add), new_watchers_path(object_type: :project, object_id: @project.id), remote: true,
-                        method: 'get' %>
-          </div>
-        <% end %>
-        <h3><%= l(:label_project_watchers) %> (<%= @project.watcher_users.size %>)</h3>
-        <%= watchers_list @project %>
-      <% end %>
+      <%= render partial: 'watchers/watchers', locals: { watched: @folder ? @folder : @project } %>
     </div>
   <% end %>
 <% end %>
 
-<% if Redmine::Plugin.installed?(:easy_extensions) %>
+<% if defined?(EasyExtensions) %>
   <%= late_javascript_tag do %>
     $(function() {
       $("p.buttons").addClass("filter-buttons form-actions");
@@ -122,7 +113,7 @@
       buttonApply.text("<%= l('easy_query.button_apply.issue') %>");
       let buttonClear = $("p.filter-buttons > a.icon-reload");
       buttonClear.addClass("button-negative");
-      buttonClear.text("<%= l('easy_query.label.default_fitlers') %>");
+      buttonClear.text("<%= l('easy_query.label.default_filters') %>");
       $("p.filter-buttons > a.icon-save").addClass("button");
       $("p.filter-buttons > a.icon-edit").addClass("button");
       $("p.filter-buttons > a.icon-del").addClass("button");

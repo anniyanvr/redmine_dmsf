@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Copyright © 2011-23 Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,14 +20,9 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
-class DmsfFilesControllerTest < RedmineDmsf::Test::TestCase 
-  
+# DmsfFiles controller
+class DmsfFilesControllerTest < RedmineDmsf::Test::TestCase
   fixtures :dmsf_folders, :dmsf_files, :dmsf_file_revisions, :dmsf_locks
-
-  def setup
-    super
-    @request.session[:user_id] = @jsmith.id
-  end
 
   def teardown
     super
@@ -37,13 +31,15 @@ class DmsfFilesControllerTest < RedmineDmsf::Test::TestCase
 
   def test_show_file_ok
     # Permissions OK
-    get :show, params: { id: @file1.id }
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    get "/dmsf/files/#{@file1.id}", params: { id: @file1.id }
     assert_response :success
   end
 
   def test_show_formatting_html
     Setting.text_formatting = 'HTML'
-    get :show, params: { id: @file1.id }
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    get "/dmsf/files/#{@file1.id}", params: { id: @file1.id }
     assert_response :success
     assert_include 'dmsf-description', response.body, 'dmsf-description class not found'
     assert_include 'wiki-edit', response.body, 'wiki-edit class not found'
@@ -51,7 +47,8 @@ class DmsfFilesControllerTest < RedmineDmsf::Test::TestCase
 
   def test_show_formatting_textile
     Setting.text_formatting = 'Textile'
-    get :show, params: { id: @file1.id }
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    get "/dmsf/files/#{@file1.id}", params: { id: @file1.id }
     assert_response :success
     assert_include 'dmsf-description', response.body, 'dmsf-description class not found'
     assert_include 'wiki-edit', response.body, 'wiki-edit class not found'
@@ -59,26 +56,32 @@ class DmsfFilesControllerTest < RedmineDmsf::Test::TestCase
 
   def test_show_file_forbidden
     # Missing permissions
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
     @role_manager.remove_permission! :view_dmsf_files
-    get :show, params: { id: @file1.id }
+    get "/dmsf/files/#{@file1.id}", params: { id: @file1.id }
     assert_response :forbidden
   end
 
   def test_view_file_ok
     # Permissions OK
-    get :view, params: { id: @file1.id }
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    get "/dmsf/files/#{@file1.id}/view", params: { id: @file1.id }
     assert_response :success
   end
 
   def test_view_file_forbidden
     # Missing permissions
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
     @role_manager.remove_permission! :view_dmsf_files
-    get :view, params: { id: @file1.id }
+    get "/dmsf/files/#{@file1.id}/view", params: { id: @file1.id }
     assert_response :forbidden
   end
 
   def test_view_preview
-    get :view, params: { id: @file13.id }
+    return unless RedmineDmsf::Preview.office_available?
+
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    get "/dmsf/files/#{@file13.id}/view", params: { id: @file13.id }
     assert_response :success
     assert_equal 'application/pdf', @response.media_type
     assert @response.body.starts_with?('%PDF')
@@ -86,38 +89,63 @@ class DmsfFilesControllerTest < RedmineDmsf::Test::TestCase
 
   def delete_forbidden
     # Missing permissions
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
     @role_manager.remove_permission! :file_manipulation
-    delete :delete, params: { id: @file1, folder_id: @file1.dmsf_folder, commit: false }
+    delete "/dmsf/files/#{@file1.id}", params: { id: @file1.id, folder_id: @file1.dmsf_folder.id, commit: false }
     assert_response :forbidden
   end
 
   def delete_locked
     # Permissions OK but the file is locked
-    delete :delete, params: { id: @file2, folder_id: @file2.dmsf_folder, commit: false }
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    delete "/dmsf/files/#{@file2.id}", params: { id: @file2.id, folder_id: @file2.dmsf_folder.id, commit: false }
     assert_response :redirect
     assert_include l(:error_file_is_locked), flash[:error]
   end
 
   def delete_ok
     # Permissions OK and not locked
-    delete :delete, params: { id: @file1, folder_id: @file1.dmsf_folder, commit: false }
-    assert_redirected_to dmsf_folder_path(id: @file1.project, folder_id: @file1.dmsf_folder)
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    delete "/dmsf/files/#{@file1.id}", params: { id: @file1.id, folder_id: @file1.dmsf_folder.id, commit: false }
+    assert_redirected_to dmsf_folder_path(id: @file1.project, folder_id: @file1.dmsf_folder.id)
   end
 
   def test_delete_in_subfolder
-    delete :delete, params: { id: @file4, folder_id: @file4.dmsf_folder, commit: false }
-    assert_redirected_to dmsf_folder_path(id: @file4.project, folder_id: @file4.dmsf_folder)
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    delete "/dmsf/files/#{@file4.id}", params: { id: @file4.id, folder_id: @file4.dmsf_folder.id, commit: false }
+    assert_redirected_to dmsf_folder_path(id: @file4.project, folder_id: @file4.dmsf_folder.id)
   end
 
   def test_obsolete_revision_ok
-    get :obsolete_revision, params: { id: @file1.last_revision.id }
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    get "/dmsf/files/#{@file1.id}/revision/obsolete", params: { id: @file1.last_revision.id }
     assert_redirected_to action: 'show', id: @file1
   end
 
   def test_obsolete_revision_missing_permissions
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
     @role_manager.remove_permission! :file_manipulation
-    get :obsolete_revision, params: { id: @file1.last_revision.id }
+    get "/dmsf/files/#{@file1.id}/revision/obsolete", params: { id: @file1.last_revision.id }
     assert :forbiden
   end
-  
+
+  def test_create_revision
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    assert_difference 'DmsfFileRevision.count', +1 do
+      post "/dmsf/files/#{@file1.id}/revision/create",
+           params: {
+             id: @file1.id,
+             version_major: @file1.last_revision.major_version,
+             version_minor: @file1.last_revision.minor_version + 1,
+             dmsf_file_revision: {
+               title: @file1.last_revision.title,
+               name: @file1.last_revision.name,
+               description: @file1.last_revision.description,
+               comment: 'New revision'
+             }
+           }
+    end
+    assert_redirected_to dmsf_folder_path(id: @file1.project)
+    assert_not_nil @file1.last_revision.digest
+  end
 end

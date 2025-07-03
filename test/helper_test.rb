@@ -1,11 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+#  Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,9 +20,8 @@
 
 module RedmineDmsf
   module Test
-
+    # Helper test
     class HelperTest < ActiveSupport::TestCase
-
       fixtures :users, :email_addresses, :projects, :roles, :members, :member_roles
 
       # Allow us to override the fixtures method to implement fixtures for our plugin.
@@ -41,7 +37,7 @@ module RedmineDmsf
             redmine_table_names << x
           end
         end
-        super redmine_table_names if redmine_table_names.any?
+        super(redmine_table_names) if redmine_table_names.any?
       end
 
       def setup
@@ -53,24 +49,22 @@ module RedmineDmsf
           role.add_permission! :view_dmsf_files
         end
         @project1 = Project.find 1
-        @project1.enable_module! :dmsf
-        Setting.plugin_redmine_dmsf['dmsf_storage_directory'] = File.join(%w(files dmsf))
+        @project2 = Project.find 2
+        [@project1, @project2].each do |prj|
+          prj.enable_module! :dmsf
+        end
+        Setting.plugin_redmine_dmsf['dmsf_storage_directory'] = File.join('files', 'dmsf')
         Setting.plugin_redmine_dmsf['dmsf_webdav_use_project_names'] = nil
         Setting.plugin_redmine_dmsf['dmsf_projects_as_subfolders'] = nil
-        Setting.plugin_redmine_dmsf['dmsf_storage_directory'] = File.join(%w(files dmsf))
         FileUtils.cp_r File.join(File.expand_path('../fixtures/files', __FILE__), '.'), DmsfFile.storage_path
       end
 
       def teardown
         # Delete our tmp folder
-        begin
-          FileUtils.rm_rf DmsfFile.storage_path
-        rescue => e
-          Rails.logger.error e.message
-        end
+        FileUtils.rm_rf DmsfFile.storage_path
+      rescue StandardError => e
+        Rails.logger.error e.message
       end
-
     end
-
   end
 end

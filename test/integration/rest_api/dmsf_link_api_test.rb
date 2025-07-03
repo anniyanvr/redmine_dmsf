@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,6 +20,7 @@
 
 require File.expand_path('../../../test_helper', __FILE__)
 
+# Link API
 class DmsfLinkApiTest < RedmineDmsf::Test::IntegrationTest
   include Redmine::I18n
 
@@ -34,9 +34,9 @@ class DmsfLinkApiTest < RedmineDmsf::Test::IntegrationTest
   def test_create_link
     token = Token.create!(user: @jsmith_user, action: 'api')
     name = 'REST API link test'
-    # curl -v -H "Content-Type: application/xml" -X POST --data "@link.xml" -H "X-Redmine-API-Key: USERS_API_KEY" http://localhost:3000/dmsf_links.xml
-    payload = %{<?xml version="1.0" encoding="utf-8" ?>
-                <dmsf_link>
+    # curl -v -H "Content-Type: application/xml" -X POST --data "@link.xml"
+    # -H "X-Redmine-API-Key: USERS_API_KEY" http://localhost:3000/dmsf_links.xml
+    payload = %(<dmsf_link>
                   <project_id>#{@project1.id}</project_id>
                   <type>link_from</type>
                   <dmsf_file_id></dmsf_file_id>
@@ -45,7 +45,7 @@ class DmsfLinkApiTest < RedmineDmsf::Test::IntegrationTest
                   <target_file_id>#{@file1.id}</target_file_id>
                   <external_url></external_url>
                   <name>#{name}</name>
-                </dmsf_link>}
+                </dmsf_link>)
     post "/dmsf_links.xml?key=#{token.value}", params: payload, headers: { 'CONTENT_TYPE' => 'application/xml' }
     assert_response :success
     # <?xml version="1.0" encoding="UTF-8"?>

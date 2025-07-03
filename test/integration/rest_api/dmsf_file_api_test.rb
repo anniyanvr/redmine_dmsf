@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,6 +20,7 @@
 
 require File.expand_path('../../../test_helper', __FILE__)
 
+# File API
 class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
   include Redmine::I18n
 
@@ -33,7 +33,7 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
   end
 
   def test_get_document
-    #curl -v -H "Content-Type: application/xml" -X GET -u ${1}:${2} http://localhost:3000/dmsf/files/17216.xml
+    # curl -v -H "Content-Type: application/xml" -X GET -u ${1}:${2} http://localhost:3000/dmsf/files/17216.xml
     get "/dmsf/files/#{@file1.id}.xml?key=#{@token.value}"
     assert_response :success
     assert @response.media_type.include?('application/xml')
@@ -65,6 +65,7 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
     #       <dmsf_workflow_assigned_at/>
     #       <dmsf_workflow_started_by_user_id/>
     #       <dmsf_workflow_started_at/>
+    #       <dmsf_worklfow_state>Waiting for Approval</dmsf_workflow_state>
     #       <digest></digest>
     #     </dmsf_file_revision>
     #     <dmsf_file_revision>
@@ -87,6 +88,7 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
     #       <dmsf_workflow_assigned_at/>
     #       <dmsf_workflow_started_by_user_id>1</dmsf_workflow_started_by_user_id>
     #       <dmsf_workflow_started_at/>
+    #       <dmsf_worklfow_state>Waiting for Approval</dmsf_workflow_state>
     #       <digest>81dc9bdb52d04dc20036dbd8313ed055</digest>
     #       <custom_fields>
     #         <custom_field>
@@ -103,18 +105,24 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
     assert_select 'dmsf_file > content_url', text: "http://www.example.com/dmsf/files/#{@file1.id}/download"
     assert_select 'dmsf_file > dmsf_file_revisions > dmsf_file_revision', @file1.dmsf_file_revisions.all.size
     assert_select 'dmsf_file > dmsf_file_revisions > dmsf_file_revision > custom_fields > custom_field'
-    #curl -v -H "Content-Type: application/octet-stream" -X GET -u ${1}:${2} http://localhost:3000/dmsf/files/41532/download > file.txt
+    assert_select 'dmsf_file > dmsf_file_revisions > dmsf_file_revision > dmsf_worklfow_state',
+                  text: 'Waiting for Approval'
+    # curl -v -H "Content-Type: application/octet-stream" -X GET -u ${1}:${2}
+    #   http://localhost:3000/dmsf/files/41532/download > file.txt
     get "/dmsf/files/#{@file1.id}/download.xml?key=#{@token.value}"
     assert_response :success
     assert_equal '123', @response.body
   end
 
   def test_upload_document
-    #curl --data-binary "@cat.gif" -H "Content-Type: application/octet-stream" -X POST -u ${1}:${2} http://localhost:3000/projects/12/dmsf/upload.xml?filename=cat.gif
-    post "/projects/#{@project1.id}/dmsf/upload.xml?filename=test.txt&key=#{@token.value}", params: 'File content', headers: { "CONTENT_TYPE" => 'application/octet-stream' }
+    # curl --data-binary "@cat.gif" -H "Content-Type: application/octet-stream" -X POST -u ${1}:${2}
+    #   http://localhost:3000/projects/12/dmsf/upload.xml?filename=cat.gif
+    post "/projects/#{@project1.id}/dmsf/upload.xml?filename=test.txt&key=#{@token.value}",
+         params: 'File content',
+         headers: { 'CONTENT_TYPE' => 'application/octet-stream' }
     assert_response :created
     assert @response.media_type.include?('application/xml')
-    #<?xml version="1.0" encoding="UTF-8"?>
+    # <?xml version="1.0" encoding="UTF-8"?>
     # <upload>
     #   <token>2.8bb2564936980e92ceec8a5759ec34a8</token>
     # </upload>
@@ -122,9 +130,9 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
     assert_kind_of Hash, xml['upload']
     ftoken = xml['upload']['token']
     assert_not_nil ftoken
-    #curl -v -H "Content-Type: application/xml" -X POST --data "@file.xml" -u ${1}:${2} http://localhost:3000/projects/12/dmsf/commit.xml
-    payload = %{<?xml version="1.0" encoding="utf-8" ?>
-                <attachments>
+    # curl -v -H "Content-Type: application/xml" -X POST --data "@file.xml" -u ${1}:${2}
+    #   http://localhost:3000/projects/12/dmsf/commit.xml
+    payload = %(<attachments>
                  <folder_id/>
                  <uploaded_file>
                    <name>test.txt</name>
@@ -138,29 +146,34 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
                    <!-- End of optional -->
                    <token>#{ftoken}</token>
                  </uploaded_file>
-                </attachments>}
+                </attachments>)
     assert_difference 'DmsfFileRevision.count', +1 do
-      post "/projects/#{@project1.id}/dmsf/commit.xml?key=#{@token.value}", params: payload, headers: { 'CONTENT_TYPE' => 'application/xml' }
+      post "/projects/#{@project1.id}/dmsf/commit.xml?key=#{@token.value}",
+           params: payload,
+           headers: { 'CONTENT_TYPE' => 'application/xml' }
     end
-    #<?xml version="1.0" encoding="UTF-8"?>
-    #<dmsf_files total_count="1" type="array">
-    # <file>
-    #   <id>17229</id>
-    #   <name>test.txt</name>
-    # </file>
-    # </dmsf_files> #
+    # <?xml version="1.0" encoding="UTF-8"?>
+    # <dmsf_files total_count="1" type="array">
+    #  <file>
+    #    <id>17229</id>
+    #    <name>test.txt</name>
+    #  </file>
+    #  </dmsf_files> #
     assert_select 'dmsf_files > file > name', text: 'test.txt'
     assert_response :success
     revision = DmsfFileRevision.order(:created_at).last
-    assert revision && revision.size > 0
+    assert revision.present?
+    assert_equal 'text/plain', revision.mime_type
   end
 
   def test_upload_document_exceeded_attachment_max_size
     Setting.attachment_max_size = '1'
-    #curl --data-binary "@text.txt" -H "Content-Type: application/octet-stream" -X POST -u ${1}:${2} http://localhost:3000/projects/12/dmsf/upload.xml?filename=text.txt
+    # curl --data-binary "@text.txt" -H "Content-Type: application/octet-stream" -X POST -u ${1}:${2}
+    #   http://localhost:3000/projects/12/dmsf/upload.xml?filename=text.txt
     file_content = 'x' * 2.kilobytes
-    post "/projects/#{@project1.id}/dmsf/upload.xml?filename=test.txt&key=#{@token.value}", params: file_content,
-      headers: { 'CONTENT_TYPE' => 'application/octet-stream' }
+    post "/projects/#{@project1.id}/dmsf/upload.xml?filename=test.txt&key=#{@token.value}",
+         params: file_content,
+         headers: { 'CONTENT_TYPE' => 'application/octet-stream' }
     assert_response :unprocessable_entity
   end
 
@@ -182,8 +195,10 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
   end
 
   def test_delete_folder_commit_yes
-    # curl -v -H "Content-Type: application/xml" -X DELETE -u ${1}:${2} http://localhost:3000/dmsf/files/196118.xml&commit=yes
-    delete "/dmsf/files/#{@file1.id}.xml?key=#{@token.value}&commit=yes", headers: { 'CONTENT_TYPE' => 'application/xml' }
+    # curl -v -H "Content-Type: application/xml" -X DELETE -u ${1}:${2}
+    #   http://localhost:3000/dmsf/files/196118.xml&commit=yes
+    delete "/dmsf/files/#{@file1.id}.xml?key=#{@token.value}&commit=yes",
+           headers: { 'CONTENT_TYPE' => 'application/xml' }
     assert_response :success
     assert_nil DmsfFile.find_by(id: @file1.id)
   end
@@ -194,7 +209,7 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
     User.current = nil
     # curl -v -H "Content-Type: application/xml" -X DELETE -u ${1}:${2} http://localhost:3000/dmsf/files/196118.xml
     delete "/dmsf/files/#{@file1.id}.xml?key=#{@token.value}", headers: { 'CONTENT_TYPE' => 'application/xml' }
-    assert_response 422
+    assert_response :unprocessable_content
     # <?xml version="1.0" encoding="UTF-8"?>
     # <errors type="array">
     #   <error>Locked by Admin</error>
@@ -205,9 +220,9 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
   end
 
   def test_create_revision
-    # curl -v -H "Content-Type: application/xml" -X POST --data "@revision.xml" -u ${1}:${2} http://localhost:3000/dmfs/files/1/revision/create.xml
-    payload = %{
-      <?xml version="1.0" encoding="utf-8" ?>
+    # curl -v -H "Content-Type: application/xml" -X POST --data "@revision.xml" -u ${1}:${2}
+    #   http://localhost:3000/dmfs/files/1/revision/create.xml
+    payload = %(
       <dmsf_file_revision>
         <title>#{@file1.name}</title>
         <name>#{@file1.name}</name>
@@ -217,8 +232,9 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
           <custom_field_value>User documentation</custom_field_value>
         </custom_field_values>
       </dmsf_file_revision>
-    }
-    post "/dmsf/files/#{@file1.id}/revision/create.xml?key=#{@token.value}", params: payload,
+    )
+    post "/dmsf/files/#{@file1.id}/revision/create.xml?key=#{@token.value}",
+         params: payload,
          headers: { 'CONTENT_TYPE' => 'application/xml' }
     assert_response :success
     # <?xml version="1.0" encoding="UTF-8"?>
@@ -227,37 +243,4 @@ class DmsfFileApiTest < RedmineDmsf::Test::IntegrationTest
     # </dmsf_file_revision>
     assert_select 'dmsf_file_revision > id', text: @file1.last_revision.id.to_s
   end
-
-  def test_copy_document
-    #curl -v -H "Content-Type: application/xml" -X POST --data "@file_or_folder_copy_move.xml" -H "X-Redmine-API-Key: USERS_API_KEY" http://localhost:3000/dmsf/files/1/copy/copy.xml
-    payload = %{
-      <?xml version="1.0" encoding="utf-8" ?>
-      <dmsf_file_or_folder>
-        <target_project_id>#{@project1.id}</target_project_id>
-        <target_folder_id>#{@folder1.id}</target_folder_id>
-      </dmsf_file_or_folder>
-    }
-    assert_difference('@folder1.dmsf_files.count', 1) do
-      post "/dmsf/files/#{@file1.id}/copy/copy.xml?key=#{@token.value}", params: payload,
-           headers: { 'CONTENT_TYPE' => 'application/xml' }
-    end
-    assert_response :success
-  end
-
-  def test_move_document
-    #curl -v -H "Content-Type: application/xml" -X POST --data "@file_or_folder_copy_move.xml" -H "X-Redmine-API-Key: USERS_API_KEY" http://localhost:3000/dmsf/files/1/copy/move.xml
-    payload = %{
-      <?xml version="1.0" encoding="utf-8" ?>
-      <dmsf_file_or_folder>
-        <target_project_id>#{@project1.id}</target_project_id>
-        <target_folder_id>#{@folder1.id}</target_folder_id>
-      </dmsf_file_or_folder>
-    }
-    assert_difference('@folder1.dmsf_files.count', 1) do
-      post "/dmsf/files/#{@file1.id}/copy/move.xml?key=#{@token.value}", params: payload,
-           headers: { 'CONTENT_TYPE' => 'application/xml' }
-    end
-    assert_response :success
-  end
-
 end

@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,28 +20,25 @@
 
 module RedmineDmsf
   module Webdav
-
     # ResourceProxy
     #
     # This is more of a factory approach of an object, class determines which class to
     # instantiate based on pathing information, it then populates @resource_c with this
     # object, and proxies calls made against class to it.
     class ResourceProxy < Dav4rack::Resource
-
       attr_reader :read_only
 
       def initialize(path, request, response, options)
         # Check the settings cache for each request
         Setting.check_cache
         # Return 404 - NotFound if WebDAV is not enabled
-        unless Setting.plugin_redmine_dmsf['dmsf_webdav']
-          raise NotFound
-        end
-        super path, request, response, options
+        raise NotFound unless RedmineDmsf.dmsf_webdav?
+
+        super
         rc = get_resource_class(path)
         @resource_c = rc.new(path, request, response, options)
         @resource_c.accessor = self if @resource_c
-        @read_only = Setting.plugin_redmine_dmsf['dmsf_webdav_strategy'] == 'WEBDAV_READ_ONLY'
+        @read_only = RedmineDmsf.dmsf_webdav_strategy == 'WEBDAV_READ_ONLY'
       end
 
       def authenticate(username, password)
@@ -86,7 +81,7 @@ module RedmineDmsf
       def last_modified
         @resource_c.last_modified
       end
-      
+
       def etag
         @resource_c.etag
       end
@@ -103,28 +98,33 @@ module RedmineDmsf
         @resource_c.get request, response
       end
 
-      def put(request, response)
+      def put(request)
         raise BadGateway if @read_only
-        @resource_c.put request, response
+
+        @resource_c.put request
       end
 
       def delete
         raise BadGateway if @read_only
+
         @resource_c.delete
       end
 
-      def copy(dest, overwrite, depth)
+      def copy(dest)
         raise BadGateway if @read_only
-        @resource_c.copy dest, overwrite, depth
+
+        @resource_c.copy dest
       end
 
-      def move(dest, overwrite = false)
+      def move(dest)
         raise BadGateway if @read_only
-        @resource_c.move dest, overwrite
+
+        @resource_c.move dest
       end
 
       def make_collection
         raise BadGateway if @read_only
+
         @resource_c.make_collection
       end
 
@@ -134,6 +134,7 @@ module RedmineDmsf
 
       def lock(args)
         raise BadGateway if @read_only
+
         @resource_c.lock args
       end
 
@@ -143,6 +144,7 @@ module RedmineDmsf
 
       def unlock(token)
         raise BadGateway if @read_only
+
         @resource_c.unlock token
       end
 
@@ -179,16 +181,17 @@ module RedmineDmsf
       end
 
       # Adds the given xml namespace to namespaces and returns the prefix
-      def add_namespace(ns, prefix = "unknown#{rand 65536}")
-        if ns.present?
-          prefix = 'ns1'
-          2.step do |i|
-            break unless namespaces.has_value?(prefix)
-            prefix = "ns#{i}"
-          end
-          namespaces[ns] = prefix
-          prefix
+      def add_namespace(namespace, _prefix = '')
+        return if namespace.blank?
+
+        prefix = 'ns1'
+        2.step do |i|
+          break unless namespaces.value?(prefix)
+
+          prefix = "ns#{i}"
         end
+        namespaces[namespace] = prefix
+        prefix
       end
 
       # returns the prefix for the given namespace, adding it if necessary
@@ -196,29 +199,31 @@ module RedmineDmsf
         namespaces[ns_href] || add_namespace(ns_href)
       end
 
+      def authentication_realm
+        RedmineDmsf::Webdav::AUTHENTICATION_REALM
+      end
+
       private
 
       def get_resource_class(path)
         pinfo = path.split('/').drop(1)
-        return IndexResource if pinfo.length == 0
+        return IndexResource if pinfo.empty?
+
         return ProjectResource if pinfo.length == 1
+
         i = 1
         project = nil
         prj = nil
-        while pinfo.length > 0
-          prj = BaseResource::get_project(Project, pinfo.first, project)
-          if prj
-            project = prj
-          else
-            break
-          end
-          i = i + 1
+        while pinfo.length.positive?
+          prj = BaseResource.get_project(Project, pinfo.first, project)
+          break unless prj
+
+          project = prj
+          i += 1
           pinfo = path.split('/').drop(i)
         end
         prj ? ProjectResource : DmsfResource
       end
-
     end
-
   end
 end

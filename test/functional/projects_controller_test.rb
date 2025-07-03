@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,15 +20,15 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
+# Projects controller
 class ProjectsControllerTest < RedmineDmsf::Test::TestCase
-
   include Redmine::I18n
 
   def test_settings_dms_member
-    @request.session[:user_id] = @jsmith.id
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
     @role_manager.add_permission! :user_preferences
-    with_settings plugin_redmine_dmsf: {'dmsf_act_as_attachable' => '1'} do
-      get :settings, params: { id: @project1.id, tab: 'dmsf' }
+    with_settings plugin_redmine_dmsf: { 'dmsf_act_as_attachable' => '1' } do
+      get "/projects/#{@project1.id}/settings", params: { tab: 'dmsf' }
     end
     assert_response :success
     assert_select 'fieldset legend', text: l(:link_user_preferences)
@@ -37,26 +36,35 @@ class ProjectsControllerTest < RedmineDmsf::Test::TestCase
   end
 
   def test_settings_dms_member_no_permission
-    @request.session[:user_id] = @jsmith.id
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
     @role_manager.remove_permission! :user_preferences
-    get :settings, params: { id: @project1.id, tab: 'dmsf' }
+    get "/projects/#{@project1.id}/settings", params: { tab: 'dmsf' }
     assert_response :success
     assert_select 'fieldset legend', text: l(:link_user_preferences), count: 0
   end
 
   def test_settings_dms_non_member
-    @request.session[:user_id] = @admin.id
-    get :settings, params: { id: @project1.id, tab: 'dmsf' }
+    post '/login', params: { username: 'admin', password: 'admin' }
+    get "/projects/#{@project1.id}/settings", params: { tab: 'dmsf' }
     assert_response :success
     assert_select 'fieldset legend', text: l(:link_user_preferences), count: 0
   end
 
   def test_settings_dms_member_no_act_as_attachments
-    @request.session[:user_id] = @jsmith.id
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
     @role_manager.add_permission! :user_preferences
-    get :settings, params: { id: @project1.id, tab: 'dmsf' }
+    get "/projects/#{@project1.id}/settings", params: { tab: 'dmsf' }
     assert_response :success
-    assert_select 'fieldset legend', text: "#{l(:field_project)} #{l(:label_preferences)}", count: 0
+    assert_select 'label', text: l(:label_act_as_attachable), count: 0
   end
 
+  def test_legacy_notifications
+    post '/login', params: { username: 'jsmith', password: 'jsmith' }
+    @role_manager.add_permission! :user_preferences
+    with_settings notified_events: ['dmsf_legacy_notifications'] do
+      get "/projects/#{@project1.id}/settings", params: { tab: 'dmsf' }
+      assert_response :success
+      assert_select 'label', text: l(:label_notifications)
+    end
+  end
 end

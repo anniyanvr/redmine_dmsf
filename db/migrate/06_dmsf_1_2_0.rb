@@ -1,9 +1,8 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Vít Jonáš <vit.jonas@gmail.com>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,8 +18,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Add column
 class Dmsf120 < ActiveRecord::Migration[4.2]
-
   def up
     add_column :dmsf_file_revisions, :project_id, :integer, null: true
     DmsfFileRevision.reset_column_information
@@ -36,5 +35,4 @@ class Dmsf120 < ActiveRecord::Migration[4.2]
   def down
     remove_column :dmsf_file_revisions, :project_id
   end
-
 end

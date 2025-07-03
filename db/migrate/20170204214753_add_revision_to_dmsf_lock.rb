@@ -1,9 +1,8 @@
-# encoding: utf-8
-#
+# frozen_string_literal: true
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
-# Copyright © 2016-17 carlolars
+# Karel Pičman <karel.picman@kontron.com>, carlolars
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,10 +18,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Add column
 class AddRevisionToDmsfLock < ActiveRecord::Migration[4.2]
-
   def change
     add_column :dmsf_locks, :revision, :integer, null: true
   end
-
 end

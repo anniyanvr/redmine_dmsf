@@ -1,6 +1,323 @@
 Changelog for Redmine DMSF
 ==========================
 
+4.1.3 *2025-05-09*
+------------------
+    
+    SQL server compatibility
+
+* Bug: #1595 - DMSF WebDAV Configuration Fails on Redmine 6.0.5
+
+4.1.2 *2025-04-02*
+------------------
+
+    Wrong workflow text by linked documents
+
+4.1.1 *2025-02-19*
+------------------
+
+    Links download error fix
+
+* Bug: #1592 - Link entries download error
+
+4.1.0 *2025-02-12*
+------------------
+
+    Puma 6 compatibility
+
+* New: #1589 - Support for Puma web server
+
+4.0.3 *2025-01-31*
+------------------
+
+    Security enhancement
+
+* Bug: #1370 - Where to report security issues?
+
+4.0.2 *2025-01-30*
+------------------
+
+    Moving folders fix
+    Coloured system sub-folders
+
+* Bug: #1585 - Move X Copy
+* Bug: #1580 - Can't upgrade plugin to 4.0.1 after upgrading redmine to 6.0.2
+* Bug: #1557 - Editing of locked folder
+
+4.0.1 *2025-01-17*
+------------------
+
+    Coloured icons
+
+* Bug: #1578 - Attached documents are not visible by issues
+* Bug: #1577 - Inconsistent default values in settings
+* Bug: #1576 - Issue notifications
+* New: #1575 - Coloured icons
+* Bug: #1574 - Missing default browser context menu
+* Bug: #1572 - RAILS_ENV=production bundle exec rake redmine:plugins:migrate NAME=redmine_dmsf fails
+
+4.0.0 *2024-12-17*
+------------------
+
+    Redmine 6
+
+* New: #1571 - Update de.yml
+* Bug: #1570 - Emails are not sent to the author if no_self_notified
+* Bug: #1568 - The "Link from" doesn't work after upgrading the browsers
+* Bug: #1567 - Fixes Column 'dmsf_mail_notification' cannot be null
+* Bug: #1566 - Approval workflow notifications
+* Bug: #1565 - Plugin settings "Display notified recipients" does not apply!
+* Bug: #1564 - Revision API issues
+* New: #1563 - Redmine 6
+* New: #1561 - Add a waring about max number of uploaded files exceeded
+* Bug: #1560 - Can't add more than one link to an issue
+
+3.2.4 *2024-10-24*
+------------------
+
+    Multiple file upload fix
+
+* Bug: #1559 - Multiple files upload
+* Bug: #1558 - Deleting of uploaded files
+
+3.2.3 *2024-10-18*
+------------------
+ 
+    Uploaded file size fix
+
+* Bug: 1556 - Wrong file size when uploading documents
+
+3.2.2 *2024-10-09*
+------------------
+
+    Upload and Commit in one step
+    Documents' details in issue form
+
+* Bug: #1553 - Wiki Tool always in English after installing DMSF Plugin
+* New: #1552 - Adds further text to reset button of webdav digest
+* Bug: #1551 - Changes token action name for WebDAV digest
+* Bug: #1550 - Some controller hooks won't get loaded
+* New: #1548 - Document's details in issue form
+* Bug: #1544 - Delete uploaded file and upload a different file
+
+3.2.1 *2024-09-02*
+------------------
+
+    DMSF digest fix
+    Redmine finance plugin compatibility
+
+* Bug: #1541 - Missing Digest
+* Bug: #1540 - Activity stream is not showing the document name
+* Bug: #1424 - Internal error while opening Settings page
+
+3.2.0 *2024-04-23*
+------------------
+
+   Redmine Product plugin compatibility
+
+* Bug: #1537 - SystemStackError when Redmine Products plugin installed
+
+3.1.9 *2024-07-18*
+------------------
+
+    Maintenance release
+
+* Bug: #1534 - Formating is not applied to Comment column
+
+
+3.1.8 *2024-07-04*
+------------------
+
+    German translation update
+    Several bugs fixed
+
+* Bug: #1533 - Mysql2::Error::TimeoutError
+* Bug: #1532 - Target folder and project are the same as current 
+* Bug: #1531 - Fixing NoMethodError in DmsfFileRevisionFormat
+* New: #1529 - Maintenance/update german translation
+
+3.1.7 *2024-06-28*
+------------------
+
+    Maintenance release
+
+* Bug: #1528 - WebDAV / LDAP-User errors 
+
+3.1.6 *2024-06-04*
+------------------
+
+* Bug: #1526 - Missing template, responding with 404: Missing partial twofa_backup_codes/_sidebar, application/_sidebar
+
+3.1.5 *2024-06-04*
+------------------
+
+    WebDAV digest authentication
+    Inline displaying of text files
+
+* Bug: #1522 - [ ] in webdav paths seem to make issues with ms-office products
+* Bug: #1518 - Mailer partial causes deprecation warning: Rendering actions with '.' in the name is deprecated
+* Bug: #1517 - The file is not uploaded to the custom file field
+* New: #1502 - Office files preview OK, but text and markdown file downloaded directly
+* New: #1464 - Basic authentication sign-in prompts are blocked by default in Microsoft 365 Apps
+
+3.1.4 *2024-05-06*
+------------------
+
+    Extended issue email notifications
+
+* New: #1515 - Adds missing safe_attribute for dmsf_not_inheritable
+* New: #1511 - Adds further validations
+* Bug: #1510 - Uncaught SyntaxError: Redeclaration of let modal in Approval Workflow Log
+* Bog: #1506 - Adminstration-settings cannot open after dmsf installed
+* Bug: #1505 - Adds an extra check in DmsfQuery#dmsf_node
+* New: #1503 - Issue notifications
+* Bug: #1501 - Problem clicking action menu (three dots) in DMS file grid
+* Bug: #1500 - Non-admin user: NoMethodError for intersect if running on Ruby 2.7.6
+* Bug: #1499 - Allow access only to xxx group , access Internal error 500
+* Bug: #1495 - DMSF doesn't ignore filepattern when LOCK and UNLOCK requests
+* Bug: #1494 - Not sending documents when sender is set to user
+* Bug: #1493 - Missing translation :notice_account_unknown_email
+* Bug: #1491 - Empty system folders
+
+3.1.3 *2023-11-15*
+------------------
+
+    DMS Document revision as a new custom field type
+    Copy/Move of multiple entries
+    REST API
+        Entries operation (copy, move, download, delete)
+    Compatibility with Redmine 5.1
+
+IMPORTANT: REST API for copying/moving has changed. Check *extra/api/api_client.sh*.
+
+* Bug: #1490 - Latest plugin version on windows: problematic dependency 'xapian-ruby'
+* Bug: #1486 - Some context menu improvements 
+* Bug: #1485 - Renames locales/ua.yml
+* Bug: #1484 - Author should be kept when moving a folder type
+* Bug: #1483 - Setting.plugin_redmine_dmsf['dmsf_index_database']: undefined method 'strip' for nil:NilClass
+* Bug: #1479 - Cannot uninstall plugin
+* Bug: #1477 - Watch permission won't work
+* New: #1474 - Removes main menu from workflows controller
+* Bug: #1473 - Edited documents cannot be unlocked
+* Bug: #1472 - Failed upgrade up to version 3.1.1 from version 3.0.12
+* New: #1248 - Make DMS document available as Type of a custom field
+* New: #1132 - Please provide a simple file operation menu 
+
+3.1.2 *2023-08-23*
+------------------
+
+    Bug fixing
+
+* Bug #1469 - Can't access a folder under watch, but works again when unwatching the folder
+
+3.1.1 *2023-08-17*
+------------------
+
+    Bug fixing
+
+* Bug #1466 - Wrong number of arguments in dmsf links new 
+
+3.1.0 *2023-08-10*
+------------------
+
+    Compatibility with Redmine 5.1
+    Ukrainian translation
+
+* New: #1461 - I want to add a Ukrainian translation to this wonderful plugin
+* Bug: #1459 - Fix .zero? error in id_attribute check
+* New: #1458 - V3.0.13 update error: Error in bundle plugins vault&dashboard
+
+3.0.13 *2023-06-21*
+------------------
+
+    Italian and German localization updated
+    OCR supported in full-text search
+    Source codes of the plugin are checked with Rubocop
+
+* Bug: #1457 - Wiki Macros present a 'http' link regardless of whether redmine is configured for http or https
+* New: #1455 - (Partially) updated IT translation
+* Bug: #1454 - After file convert view permissions missing
+* Bug: #1453 - I downloaded files from devel branch and put them into plugin folder. Then I run
+* Bug: #1452 - API call "commit" not accepting "custom_version_major", "custom_version_minor" anymore?
+* Bug: #1449 - Lost attachment on bulk edit
+* Bug: #1448 - Convert documents fails
+* New: #1445 - To support OCR feature
+* Bug: #1444 - Feature/add notification labels  
+* New: #1443 - Updates german translations
+* Bug: #1439 - Error when opening Setting page
+* Bug: #1438 - Error while de-installing the plugin "Validation failed: Name contains invalid character(s)"
+* Bug: #1434 - File view permissions issue
+
+3.0.12 *2023-03-15*
+------------------
+
+    Bug fixing
+
+* Bug: #1436 - Cannot upload new content
+
+3.0.11 *2023-03-14*
+------------------
+
+    Bug fixing
+
+3.0.10 *2023-03-10*
+-------------------
+
+    Maintenance release
+
+* Bug: #1433 - User's guide broken link
+* Bug: #1426 - Adds formatting helper to all editors
+
+3.0.9 *2023-02-10*
+------------------
+
+    Sorting
+    Filtering by custom fields
+    Download notifications
+    Embedded help
+    DMS macros in wiki toolbar
+
+* Bug: #1425 - Default sorting is not set
+* Bug: #1424 - Internal error while opening Settings page
+* Bug: #1423 - Check for Illegal characters in file name
+* New: #1421 - Help
+* Bug: #1419 - Missing checksum
+* Bug: #1417 - Query::StatementInvalid raised in dmsf#show when filtering custom fields with PostgreSQL database
+* New: #1414 - An empty minor version
+* Bug: #1413 - Vim edit through webdav causes lose of all file versions besides last.
+* Bug: #1408 - Lost attachment 2
+* New: #513  - Email Notification when someone downloads a file
+* New: #239  - Easy Document link macro creation 
+
+3.0.7 *2022-11-01*
+------------------
+
+    AlphaNode's plugins compatibility
+    Approval workflow enhancement
+    Global search
+    New filters
+
+* Bug: #1407 - Error on "New step or New Approver"
+* New: #1247 - Global DMS view - Search by title does not work
+* New: #1192 - Suggest to show Approval option in list view instead hiding it in second layer menu being folded
+* New: #1124 - New UI: Add additional filter "Locked documents"
+* New: #1118 - How can I add 'Comment' column in the file list view?
+* Bug: #880  - Removing steps of approval_workflows causes data corruption
+
+3.0.6 *2022-09-20*
+------------------
+
+    Default query
+    GitHub CI
+    PosgrSQL compatibility
+
+* Bug: #1401 - Duplicated steps in "New step" form
+* Bug: #1399 - Open 'watched' folder throw internal error
+* Bug: #1397 - System folder is not deleted
+* New: #1396 - Repeatable rake task to sync documents
+* Bug: #1395 - Use custom fields in filter throw error 500
+* New: #1386 - Changing default file query
+
 3.0.5 *2022-08-20*
 ------------------
 
@@ -19,7 +336,7 @@ Changelog for Redmine DMSF
 * Bug: #1388 - Custom field in DMS Columns
 * Bug: #1387 - Error in bundle with plugin custom table
 * Bug: #1385 - Wrong version when uploading a document via WebDAV
-* Bug: #1384 - Checksum is always the same via WebDAV type: bug
+* Bug: #1384 - Checksum is always the same via WebDAV
 
 3.0.3 *2022-07-19*
 -------------------
@@ -106,7 +423,7 @@ Changelog for Redmine DMSF
 * New: #1312 - Update _log.html.erb
 * Bug: #1311 - Deleting the link between files and issues
 * New: #1151 - Add document revision.patch_version
-* New:  #557 - Watch Documents type: enhancement
+* New:  #557 - Watch Documents
 
 2.4.11 *2021-11-03*
 -------------------
@@ -185,7 +502,7 @@ Changelog for Redmine DMSF
 * New: #1230 - Redmine 4.2.0 support
 * Bug: #1229 - Error when sorting by a custom field
 * Bug: #1221 - WebDAV links to non top-level directories are broken
-* New: #1217 - Global DMS view type: enhancement
+* New: #1217 - Global DMS view
 * Bug: #1215 - DMS Documents > New file does not respect theme styles properly
 * Bug: #1214 - Error 500 when create new revision
 * Bug: #1213 - DMS project preferences do not save
@@ -372,7 +689,7 @@ Changelog for Redmine DMSF
 * New: #855 - Workflow notification missing
 * New: #852 - Create symbolic link using REST API
 * New: #850 - REST API and pagination on collection resources
-* New: #847 - REST API and delete Folder/document type: enhancement
+* New: #847 - REST API and delete Folder/document
 * New: #823 - Office URI Scheme for direct editing of MS Office files
 * Bug: #818 - Xapian not available
 * New: #803 - 'Create folder' takes a very long time
@@ -548,15 +865,15 @@ IMPORTANT
     Wiki macros revision: dmsfd X dmsfdesc
     Support for deleting users
         
-* Bug: #578 - A wrong title when uploading documents type: bug
-* Bug: #574 - Macro {{dmsfd(xx)}} produce blank value type: bug
-* Bug: #566 - HTML tags in the document description breaks UI type: bug 
-* Bug: #565 - Error 500 when a link to another folder is in the folder/project type: bug
-* New: #562 - New step button text type: enhancement
-* Bug: #561 - Wrong path in the document's details form type: bug
-* Bug: #560 - Trying to send mail without recipient results in error 500 type: bug
-* Bug: #558 - Deletion of a user type: bug
-* New: #443 - Drag/drop feature for new content type: enhancement
+* Bug: #578 - A wrong title when uploading documents
+* Bug: #574 - Macro {{dmsfd(xx)}} produce blank value
+* Bug: #566 - HTML tags in the document description breaks UI 
+* Bug: #565 - Error 500 when a link to another folder is in the folder/project
+* New: #562 - New step button text
+* Bug: #561 - Wrong path in the document's details form
+* Bug: #560 - Trying to send mail without recipient results in error 500
+* Bug: #558 - Deletion of a user
+* New: #443 - Drag/drop feature for new content
 
 1.5.7 *2016-08-12*
 ------------------
@@ -795,7 +1112,7 @@ IMPORTANT
 * New: #179 - Workflow Log History in Detailed View
 * Bug: #187 - Approval workflow permissions 
 * New: #190 - Very slow in directories containing many files
-* Bug: #191 - Move/Copy gives undefined method for File:Class type: bug 
+* Bug: #191 - Move/Copy gives undefined method for File:Class 
 * New: #193 - French translation 
 * Bug: #194 - Workflow name link in workflow log window 
 * Bug: #195 - Workflow log not displaying all the steps 

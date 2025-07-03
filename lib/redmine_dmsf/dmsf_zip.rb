@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Vít Jonáš <vit.jonas@gmail.com>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,16 +22,22 @@ require 'zip'
 
 module RedmineDmsf
   module DmsfZip
+    FILE_PREFIX = 'dmsf_zip_'
 
+    # ZIP
     class Zip
-
-      attr_reader :files
+      attr_reader :dmsf_files
 
       def initialize
-        @temp_file = Tempfile.new(%w(dmsf_zip_ .zip), File.join(Rails.root, 'tmp'))
+        @temp_file = Tempfile.new([FILE_PREFIX, '.zip'], Rails.root.join('tmp'))
         @zip_file = ::Zip::OutputStream.open(@temp_file)
         @files = []
+        @dmsf_files = []
         @folders = []
+      end
+
+      def read
+        File.read @temp_file
       end
 
       def finish
@@ -45,40 +49,68 @@ module RedmineDmsf
         @zip_file.close
       end
 
-      def add_file(file, member, root_path = nil)
-        unless @files.include?(file)
-          unless file && file.last_revision && File.exist?(file.last_revision.disk_file)
-            raise RedmineDmsf::Errors::DmsfFileNotFoundError
+      def add_dmsf_file(dmsf_file, member = nil, root_path = nil, path = nil)
+        raise DmsfFileNotFoundError unless dmsf_file&.last_revision && File.exist?(dmsf_file.last_revision.disk_file)
+
+        if path
+          string_path = path
+        else
+          string_path = dmsf_file.dmsf_folder.nil? ? '' : (dmsf_file.dmsf_folder.dmsf_path_str + File::SEPARATOR)
+          string_path = string_path[(root_path.length + 1)..string_path.length] if root_path
+        end
+        string_path += dmsf_file.formatted_name(member)
+
+        return if @files.include?(string_path)
+
+        zip_entry = ::Zip::Entry.new(@zip_file, string_path, nil, nil, nil, nil, nil, nil,
+                                     ::Zip::DOSTime.at(dmsf_file.last_revision.updated_at))
+        @zip_file.put_next_entry zip_entry
+        File.open(dmsf_file.last_revision.disk_file, 'rb') do |f|
+          while (buffer = f.read(8192))
+            @zip_file.write buffer
           end
-          string_path = file.dmsf_folder.nil? ? '' : (file.dmsf_folder.dmsf_path_str + File::SEPARATOR)
-          string_path = string_path[(root_path.length + 1) .. string_path.length] if root_path
-          string_path += file.formatted_name(member)
-          zip_entry = ::Zip::Entry.new(@zip_file, string_path, nil, nil, nil, nil, nil, nil,
-                                       ::Zip::DOSTime.at(file.last_revision.updated_at))
-          @zip_file.put_next_entry(zip_entry)
-           File.open(file.last_revision.disk_file, 'rb') do |f|
-             while (buffer = f.read(8192))
-               @zip_file.write(buffer)
-             end
-           end
-          @files << file
         end
+        @files << string_path
+        @dmsf_files << dmsf_file
       end
 
-      def add_folder(folder, member, root_path = nil)
-        unless @folders.include?(folder)
-          string_path = folder.dmsf_path_str + File::SEPARATOR
-          string_path = string_path[(root_path.length + 1) .. string_path.length] if root_path
-          zip_entry = ::Zip::Entry.new(@zip_file, string_path, nil, nil, nil, nil, nil, nil,
-                                       ::Zip::DOSTime.at(folder.modified))
-          @zip_file.put_next_entry(zip_entry)
-          @folders << folder
-          folder.dmsf_folders.visible.each { |subfolder| add_folder(subfolder, member, root_path) }
-          folder.dmsf_files.visible.each { |file| add_file(file, member, root_path) }
+      def add_attachment(attachment, path)
+        return if @files.include?(path)
+
+        raise DmsfFileNotFoundError unless File.exist?(attachment.diskfile)
+
+        zip_entry = ::Zip::Entry.new(@zip_file, path, nil, nil, nil, nil, nil, nil,
+                                     ::Zip::DOSTime.at(attachment.created_on))
+        @zip_file.put_next_entry zip_entry
+        File.open(attachment.diskfile, 'rb') do |f|
+          while (buffer = f.read(8192))
+            @zip_file.write buffer
+          end
         end
+        @files << path
       end
 
+      def add_raw_file(filename, data)
+        return if @files.include?(filename)
+
+        zip_entry = ::Zip::Entry.new(@zip_file, filename, nil, nil, nil, nil, nil, nil, ::Zip::DOSTime.now)
+        @zip_file.put_next_entry zip_entry
+        @zip_file.write data
+        @files << filename
+      end
+
+      def add_dmsf_folder(dmsf_folder, member, root_path = nil)
+        string_path = dmsf_folder.dmsf_path_str + File::SEPARATOR
+        string_path = string_path[(root_path.length + 1)..string_path.length] if root_path
+        zip_entry = ::Zip::Entry.new(@zip_file, string_path, nil, nil, nil, nil, nil, nil,
+                                     ::Zip::DOSTime.at(dmsf_folder.modified))
+        return if @folders.include?(string_path)
+
+        @zip_file.put_next_entry zip_entry
+        @folders << string_path
+        dmsf_folder.dmsf_folders.visible.each { |folder| add_dmsf_folder(folder, member, root_path) }
+        dmsf_folder.dmsf_files.visible.each { |file| add_dmsf_file(file, member, root_path) }
+      end
     end
-
   end
 end

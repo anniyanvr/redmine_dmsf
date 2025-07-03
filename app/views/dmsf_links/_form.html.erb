@@ -1,23 +1,21 @@
 <%
-# encoding: utf-8
-#
-# Redmine plugin for Document Management System "Features"
-#
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+  # Redmine plugin for Document Management System "Features"
+  #
+  # Karel Pičman <karel.picman@kontron.com>
+  #
+  # This program is free software; you can redistribute it and/or
+  # modify it under the terms of the GNU General Public License
+  # as published by the Free Software Foundation; either version 2
+  # of the License, or (at your option) any later version.
+  #
+  # This program is distributed in the hope that it will be useful,
+  # but WITHOUT ANY WARRANTY; without even the implied warranty of
+  # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  # GNU General Public License for more details.
+  #
+  # You should have received a copy of the GNU General Public License
+  # along with this program; if not, write to the Free Software
+  # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 %>
 
 <h3 class="title"><%= l(:title_create_link) %></h3>
@@ -33,7 +31,7 @@
   <div class="box tabular">
     <% if (@type == 'link_from') && !@container %>
       <p>
-        <%= radio_button_tag :external_link, 'false', true %> <%= l(:label_internal) %><br/>
+        <%= radio_button_tag :external_link, 'false', true %> <%= l(:label_internal) %><br>
         <%= radio_button_tag :external_link, 'true', false %>  <%= l(:label_external) %>
       </p>
     <% end %>
@@ -41,9 +39,9 @@
       <% unless @fast_links && (@type == 'link_to') %>
         <p>
           <% if @type == 'link_from' %>
-            <label for="dmsf_link[target_project_id]"><%= l(:label_source_project) %></label>
+            <label for="dmsf_link_target_project_id"><%= l(:label_source_project) %></label>
           <% else %>
-            <label for="dmsf_link[target_project_id]"><%= l(:label_target_project) %></label>
+            <label for="dmsf_link_target_project_id"><%= l(:label_target_project) %></label>
           <% end %>
           <%= select_tag 'dmsf_link[target_project_id]',
             project_tree_options_for_select(DmsfFile.allowed_target_projects_on_copy,
@@ -88,7 +86,7 @@
       <% if @type == 'link_from' %>
         <p>
           <%= label_tag 'dmsf_link[target_file_id]', l(:field_target_file) %>
-          <% files = files_for_select(@dmsf_link.target_project.id, @target_folder_id) %>
+          <% files = files_for_select(@dmsf_link.target_project.id) %>
           <%= select_tag 'dmsf_link[target_file_id]', options_for_select(DmsfFolder.file_list(files)), required: modal %>
         </p>
       <% end %>
@@ -112,8 +110,8 @@
     </div>
   </div>
 <% end %>
-
 <%= late_javascript_tag do %>
+$(document).ready(function(){
   <%# Select2 extension, TODO: in case of a modal window, select2 makes problems %>
   <% unless modal || @fast_links %>
     $('#dmsf_link_target_project_id').select2();
@@ -150,4 +148,5 @@
       labelUrl.append('<span class="required"> *</span>');
     }
   });
+});
 <% end %>

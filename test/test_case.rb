@@ -1,11 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011    Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-15 Karel Pičman <karel.picman@kontron.com>
+#  Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,9 +20,9 @@
 
 module RedmineDmsf
   module Test
-    class TestCase < ActionController::TestCase
-
-      self.fixtures :users, :email_addresses, :projects, :roles, :members, :member_roles
+    # Test case
+    class TestCase < ActionDispatch::IntegrationTest
+      fixtures :users, :email_addresses, :projects, :roles, :members, :member_roles
 
       # Allow us to override the fixtures method to implement fixtures for our plugin.
       # Ultimately it allows for better integration without blowing redmine fixtures up,
@@ -40,7 +37,7 @@ module RedmineDmsf
             redmine_table_names << x
           end
         end
-        super redmine_table_names if redmine_table_names.any?
+        super(redmine_table_names) if redmine_table_names.any?
       end
 
       def setup
@@ -49,14 +46,13 @@ module RedmineDmsf
         @dlopper = User.find_by(login: 'dlopper')
         @someone = User.find_by(login: 'someone')
         @project1 = Project.find 1
-        with_settings plugin_redmine_dmsf: {'dmsf_webdav_use_project_names' => '1'} do
+        with_settings plugin_redmine_dmsf: { 'dmsf_webdav_use_project_names' => '1' } do
           @project1_name = RedmineDmsf::Webdav::ProjectResource.create_project_name(@project1)
         end
         @project1_uri = Addressable::URI.escape(@project1_name)
         @project2 = Project.find 2
-        @project3 = Project.find 3
-        @project4 = Project.find 4
-        [@project1, @project2, @project3].each do |project|
+        @project5 = Project.find 5
+        [@project1, @project2, @project5].each do |project|
           project.enable_module! :dmsf
           project.enable_module! :issue_tracking
         end
@@ -87,7 +83,7 @@ module RedmineDmsf
           role.add_permission! :manage_workflows
           role.add_permission! :file_approval
         end
-        Setting.plugin_redmine_dmsf['dmsf_storage_directory'] = File.join(%w(files dmsf))
+        Setting.plugin_redmine_dmsf['dmsf_storage_directory'] = File.join('files', ['dmsf'])
         Setting.plugin_redmine_dmsf['dmsf_projects_as_subfolders'] = nil
         Setting.text_formatting = 'Textile'
         FileUtils.cp_r File.join(File.expand_path('../fixtures/files', __FILE__), '.'), DmsfFile.storage_path
@@ -96,13 +92,10 @@ module RedmineDmsf
 
       def teardown
         # Delete our tmp folder
-        begin
-          FileUtils.rm_rf DmsfFile.storage_path
-        rescue => e
-          Rails.logger.error e.message
-        end
+        FileUtils.rm_rf DmsfFile.storage_path
+      rescue StandardError => e
+        Rails.logger.error e.message
       end
-
     end
   end
 end

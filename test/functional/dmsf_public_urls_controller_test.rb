@@ -1,9 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@lbcfree.net>
+# Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,23 +20,22 @@
 
 require File.expand_path('../../test_helper', __FILE__)
 
+# Public URL controller
 class DmsfPublicUrlsControllerTest < RedmineDmsf::Test::TestCase
-
   fixtures :dmsf_public_urls, :dmsf_folders, :dmsf_files, :dmsf_file_revisions
-  
+
   def test_show_valid_url
-    get :show, params: { token: 'd8d33e21914a433b280fdc94450ee212' }
+    get '/dmsf_public_urls', params: { token: 'd8d33e21914a433b280fdc94450ee212' }
     assert_response :success
   end
 
   def test_show_url_width_invalid_token
-    get :show, params: { token: 'f8d33e21914a433b280fdc94450ee212' }
+    get '/dmsf_public_urls', params: { token: 'f8d33e21914a433b280fdc94450ee212' }
     assert_response :not_found
   end
 
   def test_show_url_that_has_expired
-    get :show, params: { token: 'e8d33e21914a433b280fdc94450ee212' }
+    get '/dmsf_public_urls', params: { token: 'e8d33e21914a433b280fdc94450ee212' }
     assert_response :not_found
   end
-
 end

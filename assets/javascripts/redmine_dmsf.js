@@ -1,8 +1,6 @@
-/* encoding: utf-8
+/* Redmine plugin for Document Management System "Features"
 *
-* Redmine plugin for Document Management System "Features"
-*
-* Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+* Karel Pičman <karel.picman@kontron.com>
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -57,7 +55,7 @@ function dmsfToggle(el, project_id, folder_id, url)
       if (expand) {
 
         // Display only children with expanded parent
-        m = $(tr).attr('class').match(/(\d+(p|f)) idnt/);
+        let m = $(tr).attr('class').match(/(\d+(p|f)) idnt/);
 
         if(m){
 

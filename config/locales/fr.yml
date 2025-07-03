@@ -1,11 +1,9 @@
-# encoding: utf-8
 #
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011   Vít Jonáš <vit.jonas@gmail.com>
-# Copyright © 2012   Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2014   Atmis
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Vít Jonáš <vit.jonas@gmail.com>, Daniel Munn <dan.munn@munnster.co.uk>, Atmis
+#
+# Karel Pičman <karel.picman@kontron.com>
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
@@ -21,7 +19,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 fr:
-  dmsf: DMS  # Custom fields tab title
+  dmsf: DMS  # Custom fields t title
+  label_dmsf_file: DMS Fichier
   label_dmsf_file_plural: DMS Fichiers   # Email subject & Search options
   label_dmsf_file_revision_plural: Révisions du document
   label_dmsf_file_revision_access_plural: Accès au document
@@ -163,7 +162,7 @@ fr:
   field_folder: Dossier
   error_file_commit_require_uploaded_file: "Transmission des fichiers nécessaire avant l'enregistrement"
 
-  warning_some_files_were_not_commited: "Erreur d'enregsitrement de certains fichiers %{files}"
+  warning_some_files_were_not_committed: "Erreur d'enregsitrement de certains fichiers %{files}"
 
   error_user_has_not_right_delete_folder: "L'utilisateur ne dispose pas des droits nécessaires permettant la suppression
     du dossier"
@@ -267,7 +266,7 @@ fr:
   dmsf_new_step: Nouvelle étape
   dmsf_new_step_or_approver: Nouvelle étape ou Nouvel approbateur
   message_dmsf_wokflow_note: Votre note...
-  info_revision: "r%{rev}"
+  info_revision: "r %{rev}"
   link_workflow: Flux
   notice_workflow_started: Flux de validation démarré avec succès
   text_email_subject_approved: approuvé
@@ -404,6 +403,7 @@ fr:
   field_first_at: First
   field_last_at: Last
   field_size: Taille
+  field_locked: Verrouillé
 
   label_add_width: Add with
 
@@ -456,14 +456,47 @@ fr:
   label_column_version: Version
   label_column_workflow: Flux
   label_column_author: Auteur
+  label_column_description: Description
+  label_column_comment: Commentaire
 
   label_dmsf_global_menu_disabled: Global DMS menu disabled
   note_dmsf_global_menu_disabled: If yes, DMS menu item is not present in the top menu.
+  error_dmsf_workflow_assigned: Approval workflow in use can be neither edited nor deleted.
+
+  label_empty_minor_version_by_default: Empty minor version by default
+  text_email_doc_downloaded_subject: Documents downloaded
+  text_email_doc_downloaded: has just downloaded documents of
+  field_default_dmsf_query: Default DMS query
+  field_receive_download_notification: Receive download notifications
+
+  label_remove_original_documents_module: Remove the original Documents module
+
+  text_fulltext_search: 'Full-text search in documents requires presence of %{cmd1} and %{cmd2} commands on the server.'
+
+  notice_entries_copied: Copying has succeeded
+  notice_entries_moved: Moving has succeeded
+  label_dmsf_file_revision: DMS Document rev.
+  error_not_supported_image_format: Not supported image format
+  error_not_supported_video_format: Not supported video format
+
+  label_webdav_authentication: WebDAV Authentication
+  note_webdav_authentication: Basic authentication method is considered as unsecure and therefore blocked by some
+    clients. Digest authentication is based on an auto-generated digest. Users use their login and password for
+    authentication in their WebDAV clients too.
+  label_dmsf_webdav_digest_created_on: "DMS WebDAV digest created %{value} ago"
+  label_missing_dmsf_webdav_digest: Missing a DMS WebDAV digest
+  label_dmsf_webdav_digest: DMS WebDAV digest
+  text_dmsf_webdav_digest_reset: You are supposed to enter your password to generate a new DMS WebDAV digest.
+  notice_webdav_digest_reset: Your DMS WebDAV digest was reset.
+
+  label_dmsf_commit: Commit
+  label_dmsf_upload_commit: Upload and commit
 
   easy_pages:
     modules:
       dmsf_locked_documents: My locked documents
       dmsf_open_approvals: My open approvals
+      dmsf_watched_documents: My watched documents
     module_category:
       easy_dms: Easy DMS
 

@@ -1,10 +1,8 @@
-# encoding: utf-8
 # frozen_string_literal: true
-#
+
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2012    Daniel Munn <dan.munn@munnster.co.uk>
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Daniel Munn <dan.munn@munnster.co.uk>, Karel Pičman <karel.picman@kontron.com>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,8 +20,8 @@
 
 module RedmineDmsf
   module Webdav
+    # Index resource
     class IndexResource < BaseResource
-      
       def children
         unless @children
           @children = []
@@ -50,7 +48,7 @@ module RedmineDmsf
       end
 
       def etag
-        sprintf '%x-%x-%x', children.count, 4096, Time.current.to_i
+        format '%<inode>x-%<size>x-%<modified>x', inode: children.count, size: 4096, modified: Time.current.to_i
       end
 
       def content_type
@@ -61,13 +59,12 @@ module RedmineDmsf
         4096
       end
 
-      def get(request, response)
+      def get(_request, response)
         html_display
         response['Content-Length'] = response.body.bytesize.to_s
         response['Content-Type'] = 'text/html'
         OK
       end
-
     end
   end
 end

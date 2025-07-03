@@ -1,8 +1,7 @@
-# encoding: utf-8
 #
 # Redmine plugin for Document Management System "Features"
 #
-# Copyright © 2011-22 Karel Pičman <karel.picman@kontron.com>
+# Karel Pičman <karel.picman@kontron.com>
 #
 #
 #
@@ -22,6 +21,7 @@
 
 hu:
   dmsf: DMS  # Custom fields tab title
+  label_dmsf_file: DMS Dokumtum
   label_dmsf_file_plural: DMS Dokumentumok   # Email subject & Search options
   label_dmsf_file_revision_plural: Dokumtum felülvizsgálata
   label_dmsf_file_revision_access_plural: Dokumentum hozzáférései
@@ -163,7 +163,7 @@ hu:
   field_folder: Mappa
   error_file_commit_require_uploaded_file: Fájl beíratáshoz szükséges a feltöltött fájl
 
-  warning_some_files_were_not_commited: "Néhány fájl nem került beíratásra validálási locked_documents: Zárolt
+  warning_some_files_were_not_committed: "Néhány fájl nem került beíratásra validálási locked_documents: Zárolt
     dokumentum"
   error_user_has_not_right_delete_folder: A felhasználónak nincs jogosultsága a mappa törléséhez
 
@@ -267,7 +267,7 @@ hu:
   dmsf_new_step: Új lépés
   dmsf_new_step_or_approver: Új lépés vagy új jóváhagyó
   message_dmsf_wokflow_note: Saját jegyzet
-  info_revision: "r%{rev}"
+  info_revision: "r %{rev}"
   link_workflow: Workflow
   notice_workflow_started: Jóváhagyási workflow sikeresen elkezdődött
   text_email_subject_approved: elfogadott
@@ -403,6 +403,7 @@ hu:
   field_first_at: First
   field_last_at: Last
   field_size: Méret
+  field_locked: Lezárták
 
   label_add_width: Add with
 
@@ -455,14 +456,47 @@ hu:
   label_column_version: Verzió
   label_column_workflow: Workflow
   label_column_author: Szerző
+  label_column_description: Leírás
+  label_column_comment: Megjegyzés
 
   label_dmsf_global_menu_disabled: Global DMS menu disabled
   note_dmsf_global_menu_disabled: If yes, DMS menu item is not present in the top menu.
+  error_dmsf_workflow_assigned: Approval workflow in use can be neither edited nor deleted.
+
+  label_empty_minor_version_by_default: Empty minor version by default
+  text_email_doc_downloaded_subject: Documents downloaded
+  text_email_doc_downloaded: has just downloaded documents of
+  field_default_dmsf_query: Default DMS query
+  field_receive_download_notification: Receive download notifications
+
+  label_remove_original_documents_module: Remove the original Documents module
+
+  text_fulltext_search: 'Full-text search in documents requires presence of %{cmd1} and %{cmd2} commands on the server.'
+
+  notice_entries_copied: Copying has succeeded
+  notice_entries_moved: Moving has succeeded
+  label_dmsf_file_revision: DMS Document rev.
+  error_not_supported_image_format: Not supported image format
+  error_not_supported_video_format: Not supported video format
+
+  label_webdav_authentication: WebDAV Authentication
+  note_webdav_authentication: Basic authentication method is considered as unsecure and therefore blocked by some
+    clients. Digest authentication is based on an auto-generated digest. Users use their login and password for
+    authentication in their WebDAV clients too.
+  label_dmsf_webdav_digest_created_on: "DMS WebDAV digest created %{value} ago"
+  label_missing_dmsf_webdav_digest: Missing a DMS WebDAV digest
+  label_dmsf_webdav_digest: DMS WebDAV digest
+  text_dmsf_webdav_digest_reset: You are supposed to enter your password to generate a new DMS WebDAV digest.
+  notice_webdav_digest_reset: Your DMS WebDAV digest was reset.
+
+  label_dmsf_commit: Commit
+  label_dmsf_upload_commit: Upload and commit
 
   easy_pages:
     modules:
       dmsf_locked_documents: My locked documents
       dmsf_open_approvals: My open approvals
+      dmsf_watched_documents: My watched documents
     module_category:
       easy_dms: Easy DMS
 
